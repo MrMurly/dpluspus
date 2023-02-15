@@ -1,0 +1,35 @@
+dungeons and dragons inspirerat
+
+AST används för att generera en dungeon
+
+Dungeon++ (d++)
+
+deklarativt programmerings språk med inspiration från Dungeons and Dragons och C++
+
+klasser är dungeons
+
+funktioner returnar värden eller "void"
+
+Utskrifter 
+
+exempel kod:
+
+int HelloWorld() {
+	print("this is a dungeon");
+	
+}
+
+dungeon Mountain {
+	Mountain()
+
+	int attack() {
+
+	}
+}
+
+print Mountain 
+=> mountain +------------+
+			|	 		 |
+			| attack	 |
+			|	 		 |
+			+------------+
