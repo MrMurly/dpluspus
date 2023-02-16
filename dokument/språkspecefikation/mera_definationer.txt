@@ -1,0 +1,29 @@
+# Types
+
+## Primitives
+
+### Char
+
+a single character in UTF-8. starts with ' and ends with '.
+
+### Integer
+
+a whole number. consists of a sequence of numbers.
+
+### Float
+
+a floating point number. consists of a sequence of numbers followed by a dot and at least one other number. 
+
+### Boolean
+
+a true or false value. Always denoted by true or false in lowercase. 
+
+## Containers
+
+### String
+
+A combination of Chars. starts with " and ends with ". 
+
+### Arrays
+
+Constists of elements. starts with [ and ends with ].
