@@ -1,0 +1,6 @@
+<uttryck> ::= <tal>
+<uttryck> ::= <uttryck> "+" <uttryck>
+
+lexern returnar symboler
+
+regler symboler bårde inte vara lexern

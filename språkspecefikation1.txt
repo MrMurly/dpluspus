@@ -16,7 +16,6 @@ exempel kod:
 
 int HelloWorld() {
 	print("this is a dungeon");
-	
 }
 
 dungeon Mountain {
@@ -28,8 +27,8 @@ dungeon Mountain {
 }
 
 print Mountain 
-=> mountain +------------+
-			|	 		 |
-			| attack	 |
-			|	 		 |
-			+------------+
+=> mountain +------------+ 
+			|	 		 | 
+			| attack	 | 
+			|	 		 | 
+			+------------+ 
