@@ -1,0 +1,10 @@
+2022-02-22
+idag har vi arbetat på språkspecefikationen, med fokus på grammatiken.
+arbetet rullar på bra, vi båda verkar förstå hur man skriver grammatiken
+och vad de olika bitarna gör för något. 
+Det verkar finnas någon form av skillnad i programmerings erfarenhet, jag 
+känner själv mig bekväm med de koncept som introduceras. Medans min 
+labb partner verkar lite mera ovann. Men det ska inte vara några problem.
+Något som vi fastnade på var ett namn för primitiver deklararade i scopet,
+typ som "Hej" eller 0 eller [1,2,3], alltså inte variabeler utan vad som
+finns i dessa beshållare. 
