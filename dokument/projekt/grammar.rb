@@ -1,45 +1,123 @@
 require './rdparse'
 
-class DiceRoller
-        
-    def DiceRoller.roll(times, sides)
-      (1..times).inject(0) {|sum, _| sum + rand(sides) + 1 }
-    end
+class DnD
 
     def initialize
-        @diceParser = Parser.new("DnD") do
+        @dndParser = Parser.new("DnD") do
+          @variables = {"foo" => {
+            "type"=>"string",
+            "value"=>"bar"
+          }}
+
           token(/\s+/)
-          token(/\d+/) {|m| m.to_i }
+          # token(/\d+/) {|m| m.to_i }
           token(/./) {|m| m }
 
-          start :expr do 
-            match(:expr, '+', :term) {|a, _, b| a + b }
-            match(:expr, '-', :term) {|a, _, b| a - b }
+          # start :expr do 
+          #   match(:expr, '+', :term) {|a, _, b| a + b }
+          #   match(:expr, '-', :term) {|a, _, b| a - b }
+          #   match(:term)
+          # end
+          
+          # rule :term do 
+          #   match(:term, '*', :dice) {|a, _, b| a * b }
+          #   match(:term, '/', :dice) {|a, _, b| a / b }
+          #   match(:dice)
+          # end
+    
+          
+          # rule :sides do
+          #   match('%') { 100 }
+          #   match(:atom)
+          # end
+          start :begin do 
+            match(:boolean)
+            match(:varset)
+          end
+
+
+          rule :boolean do
+              match(:boolean, "||", :and) {|a, _, b| a or b}
+              match(:and)
+          end
+          
+          rule :and do
+            match(:and, "&&", :relation) {|a, _, b| a and b}
+            match(:relation)
+          end
+          
+          rule :relation do
+            match(:relation, "!=", :addition) { |a, _, b| a != b} 
+            match(:relation, "==", :addition) { |a, _, b| a == b} 
+            match(:relation, "<", :addition) { |a, _, b| a < b}  
+            match(:relation, ">", :addition) { |a,  _, b| a > b} 
+            match(:relation, "<=", :addition) { |a, _, b| a <= b} 
+            match(:relation, ">=", :addition) { |a, _, b| a >= b} 
+            match(:addition)
+          end
+          
+          rule :addition do
+            match(:addition, '+', :multi) {|a, _, b| a + b}
+            match(:addition, '-', :multi) {|a, _, b| a - b}
+            match(:multi)
+          end
+
+          rule :multi do
+            match(:term, '^', :multi) { |a, _, b| a ** b} 
+            match(:multi, '/', :term) { |a, _, b| a / b}
+            match(:multi, '%', :term) { |a, _, b| a % b}
             match(:term)
           end
-          
-          rule :term do 
-            match(:term, '*', :dice) {|a, _, b| a * b }
-            match(:term, '/', :dice) {|a, _, b| a / b }
-            match(:dice)
-          end
-    
-          rule :dice do
-            match(:atom, 'd', :sides) {|a, _, b| DiceRoller.roll(a, b) }
-            match(:atom)
+
+          rule :term do
+            match("(", :boolean, ")") 
+            match('True') { |a| true}
+            match('False') {|a| false}
+            match(:var)
+            #match("(", :boolean, ")")
           end
           
-          rule :sides do
-            match('%') { 100 }
-            match(:atom)
+          rule :var do
+            match(:identifier)
+            match(:float)
+            match(:int)
+            match(:char)
+            #match(:list)
+          end
+
+          rule :float do
+            match(:int, ".", :int)  { |a, _, b| (a.to_s + "." + b.to_s).to_f}
+          end
+
+          rule :int do
+            match(/\d+/) { |a| a.to_i }
+          end
+
+          rule :char do
+            match("'", /\w/, "'") {|_, a, _| a.to_s}
+          end
+
+          rule :identifier do
+            match(/[a-zA-Z]\w+/) {|a| @variables[a]}
+          end
+
+          rule :varset do
+            match(:primitive, :identifier, '=', :var) {|a, b, _, c| @variables[b] = {:type => c, :value => a}}
+          end
+
+          rule :primitive do
+            match('char')
+            match('int')
+            match('float')
+            match('bool')
+            match('string')
+            match('void')
           end
           
-          rule :atom do
-            # Match the result of evaluating an integer expression, which
-            # should be an Integer
-            match(Integer)
-            match('(', :expr, ')') {|_, a, _| a }
+          rule :name do
+            match(/[a-zA-Z]\w+/)
           end
+
         end
       end
       
@@ -47,14 +125,14 @@ class DiceRoller
         ["quit","exit","bye","done",""].include?(str.chomp)
     end
     
-    def roll
+    def parse
         print "[diceroller] "
         str = gets
         if done(str) then
             puts "Bye."
         else
-            puts "=> #{@diceParser.parse str}"
-            roll
+            puts "=> #{@dndParser.parse str}"
+            parse
         end
     end
 
@@ -67,4 +145,4 @@ class DiceRoller
     end
 end
 
-DiceRoller.new.roll
+DnD.new.parse
