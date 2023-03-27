@@ -315,5 +315,5 @@ end
 # [diceroller] (2+8*1d20)*3d6
 # => 306
 
-DiceRoller.new.roll
+#DiceRoller.new.roll
 
