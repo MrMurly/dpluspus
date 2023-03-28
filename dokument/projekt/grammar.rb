@@ -4,13 +4,17 @@ class DnD
 
     def initialize
         @dndParser = Parser.new("DnD") do
-          @variables = {"foo" => {
-            "type"=>"string",
-            "value"=>"bar"
-          }}
+          @variables = {}
 
           token(/\s+/)
           # token(/\d+/) {|m| m.to_i }
+          
+          token(/int/) {|m| m}
+          token(/float/) {|m| m}
+          token(/char/) {|m| m}
+          token(/string/) {|m| m}
+          token(/[a-zA-Z]\w*/) {|m| m.to_s}
+          token(/\s+/) {|m| m}
           token(/./) {|m| m }
 
           # start :expr do 
@@ -98,11 +102,11 @@ class DnD
           end
 
           rule :identifier do
-            match(/[a-zA-Z]\w+/) {|a| @variables[a]}
+            match(/[a-zA-Z]\w*/) {|a| @variables[a]}
           end
 
           rule :varset do
-            match(:primitive, :identifier, '=', :var) {|a, b, _, c| @variables[b] = {:type => c, :value => a}}
+            match(:primitive, :identifier, '=', :var) {|a, b, _, c| @variables[b] = {:type => a, :value => c}}
           end
 
           rule :primitive do
@@ -115,7 +119,7 @@ class DnD
           end
           
           rule :name do
-            match(/[a-zA-Z]\w+/)
+            match(/[a-zA-Z]\w*/)
           end
 
         end
@@ -126,7 +130,7 @@ class DnD
     end
     
     def parse
-        print "[diceroller] "
+        print "[DnD] "
         str = gets
         if done(str) then
             puts "Bye."
