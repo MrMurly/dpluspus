@@ -4,12 +4,15 @@ require 'test/unit'
 class TestAritmethic < Test::Unit::TestCase
     def testTerm
         parser = DnD.new
+        parser.log false
         assert_equal(parser.testParse("False"), false)
         assert_equal(parser.testParse("True"), true)
     end
 
     def testMulti
         parser = DnD.new
+        parser.log false
+
         assert_equal(parser.testParse("12 % 4"), 0)
         assert_equal(parser.testParse("12 % 5"), 2)
         
@@ -29,6 +32,7 @@ class TestAritmethic < Test::Unit::TestCase
     end
     def testAddition
         parser = DnD.new 
+        parser.log false
         assert_equal(parser.testParse("1 + 2"), 3)
         assert_equal(parser.testParse("55 + 65"), 120)
 
@@ -50,6 +54,8 @@ end
 class TestLogic < Test::Unit::TestCase
     def testEquals
         parser = DnD.new
+        parser.log false
+
         assert_equal(parser.testParse("True != True"), false)
         assert_equal(parser.testParse("True != False"), true)
 
@@ -68,6 +74,8 @@ class TestLogic < Test::Unit::TestCase
     
     def testAnd
         parser = DnD.new
+        parser.log false
+
         assert_equal(parser.testParse("True && True"), true)
         assert_equal(parser.testParse("True && False"), false)
         assert_equal(parser.testParse("False && False"), false)
@@ -77,6 +85,7 @@ class TestLogic < Test::Unit::TestCase
     
     def testOr
         parser = DnD.new
+        parser.log false
         assert_equal(parser.testParse("True || True"), true)
         assert_equal(parser.testParse("True || False"), true)
         assert_equal(parser.testParse("False || False"), false)
@@ -91,6 +100,8 @@ end
 class Variables < Test::Unit::TestCase
     def testVari
         parser = DnD.new
+        parser.log false
+
         parser.testParse("char a = '1'")
     
         parser.testParse("int a = 0")
@@ -105,7 +116,82 @@ class Variables < Test::Unit::TestCase
 
         parser.testParse("int a = a + 1")
         assert_equal(parser.testParse("a == 1"), true)
-        
 
+        parser.testParse("int b = 0")
+        parser.testParse("b = 1")
+        assert_equal(parser.testParse("b"), 1)
+        
+        parser.testParse("int a = 0")
+        parser.testParse("a = a + 1")
+        assert_equal(parser.testParse("a"), 1)
     end
 end    
+
+class If < Test::Unit::TestCase
+    def testIfstatement
+        parser = DnD.new
+        parser.log false
+
+        assert_equal(parser.testParse("if (True) {}"), nil)
+
+        assert_equal(parser.testParse("
+        if (True) {
+            int a = 1;
+        }"
+        ), {}) 
+    end
+
+    def testElseIf
+        parser = DnD.new
+        parser.log false
+        assert_equal(parser.testParse("if (True) {}"), nil)
+
+        assert_equal(parser.testParse("
+        if (False) {
+            int a = 1;
+        } 
+        else if (True) {
+            int a = 2;
+        }"
+        ), {:prev = {}, "a"=>})
+    end
+
+    def testElse
+        parser = DnD.new
+        parser.log false
+
+        assert_equal(parser.testParse("
+            if (False) {
+
+            }
+            else {
+                bool a = True;
+            }
+        "), {})
+    end
+end
+
+#        else {int a = 1;}
+class Block < Test::Unit::TestCase
+    def testStatements
+        parser = DnD.new
+        parser.log false
+        
+    end
+
+    def testStackFrame
+        parser = DnD.new
+        parser.log false
+        
+        assert_equal(parser.testParse("
+            {
+                int a = 0;
+                if (true) {
+                    a = 1;
+                };
+            }
+        "), {})
+
+    end
+end
+    

@@ -19,34 +19,17 @@ class Char
   end
 end
 
-"variables = {
-  x = {
-    value: 1,
-    type: int
-  }
-  prev = {
-    y = {
-      value: true,
-      type: bool 
-    }
-  }
-}"
-
-"
-y = true
-if bool then do:
-  x = 0
-end"
-
 
 class DnD
 
     def initialize
         @dndParser = Parser.new("DnD") do
-          @variables = {}
+          # @variables = {}
 
           token(/\s+/)
           #token(/\d+/) {|m| m.to_i }
+          token(/if/) { |m| m}
+          token(/else/) { |m| m}
           token(/True/) { |m| m}
           token(/False/) { |m| m}
 
@@ -70,8 +53,38 @@ class DnD
           token(/./) {|m| m }
 
           start :begin do 
-            match(:boolean)
             match(:varset)
+            match(:boolean)
+            match(:if)
+            match(:block)
+          end
+
+          rule :block do
+            match('{', :statements, '}') {|_, a, _| BlockNode.new(a)}
+            match('{','}') {|_, _| BlockNode.new }
+          end
+
+          rule :statements do
+            match(:statement, ';', :statements) {|a, _, b| StatementNode.new(a, b)}
+            match(:statement, ';') 
+          end
+
+          rule :statement do
+            match(:varset)
+            match(:if)
+            match(:boolean)
+            #match(:for)
+          end
+
+          rule :if do 
+            match('if', '(', :boolean, ')', :block, :else) {|_,_, a, _, b, c| IfElseNode.new(a, b, c)}
+            match('if', '(', :boolean, ')', :block) {|_,_, a, _, b| IfNode.new(a, b)}
+          end
+
+          rule :else do
+            match('else', 'if', '(', :boolean, ')', :block, :else) {|_, _, _, a, _, b, c| IfElseNode.new(a, b, c)}
+            match('else', 'if', '(', :boolean, ')', :block) {|_, _, _, a, _, b| IfNode.new(a, b)}
+            match('else', :block) {|_, a| a}
           end
 
           rule :boolean do
@@ -141,11 +154,12 @@ class DnD
           end
 
           rule :varget do 
-            match(:identifier) {|a| VariableNode.new a, @variables}
+            match(:identifier) {|a| VariableNode.new a}
           end
 
           rule :varset do
-            match(:primitive, :identifier, '=', :boolean) {|a, b, _, c| VariableSetNode.new b, a, c, @variables} # @variables[b] = {:type => a, :value => c}}
+            match(:identifier, '=', :boolean) {|a, _, b| VariableAssignmentNode.new a, b}
+            match(:primitive, :identifier, '=', :boolean) {|a, b, _, c| VariableSetNode.new b, a, c} 
           end
 
           rule :primitive do
@@ -185,9 +199,9 @@ class DnD
 
     def log(state = true)
         if state
-            @diceParser.logger.level = Logger::DEBUG
+            @dndParser.logger.level = Logger::DEBUG
         else
-            @diceParser.logger.level = Logger::WARN
+            @dndParser.logger.level = Logger::WARN
         end
     end
 end
