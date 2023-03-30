@@ -23,6 +23,7 @@ end
 class DnD
 
     def initialize
+        Node.new.clearStackFrame
         @dndParser = Parser.new("DnD") do
           # @variables = {}
 
@@ -98,12 +99,12 @@ class DnD
           end
           
           rule :relation do
-            match(:relation, "!=", :addition) { |a, _, b| SymbolNode.new a, :!=, b} 
-            match(:relation, "=", "=", :addition) { |a, _, _, b| SymbolNode.new a, :==, b} 
-            match(:relation, "<", "=", :addition) { |a, _, _, b| SymbolNode.new a, :<=, b} 
-            match(:relation, ">", "=", :addition) { |a, _, _, b| SymbolNode.new a, :>=, b} 
-            match(:relation, "<", :addition) { |a, _, b| SymbolNode.new a, :<, b}  
-            match(:relation, ">", :addition) { |a,  _, b| SymbolNode.new a, :>, b} 
+            match(:relation, "!=", :addition) { |a, _, b| LogicNode.new a, :!=, b} 
+            match(:relation, "=", "=", :addition) { |a, _, _, b| LogicNode.new a, :==, b} 
+            match(:relation, "<", "=", :addition) { |a, _, _, b| LogicNode.new a, :<=, b} 
+            match(:relation, ">", "=", :addition) { |a, _, _, b| LogicNode.new a, :>=, b} 
+            match(:relation, "<", :addition) { |a, _, b| LogicNode.new a, :<, b}  
+            match(:relation, ">", :addition) { |a,  _, b| LogicNode.new a, :>, b} 
             match(:addition)
           end
           
@@ -123,8 +124,8 @@ class DnD
 
           rule :term do
             match("(", :boolean, ")") 
-            match('True') { |a| ValueNode.new true}
-            match('False') {|a| ValueNode.new false}
+            match('True') { |a| ValueNode.new true, "bool"}
+            match('False') {|a| ValueNode.new false, "bool"}
             match(:var)
             #match("(", :boolean, ")")
           end
@@ -138,15 +139,15 @@ class DnD
           end
 
           rule :float do
-            match(Integer, ".", Integer)  { |a, _, b| ValueNode.new((a.to_s + "." + b.to_s).to_f)}
+            match(Integer, ".", Integer)  { |a, _, b| ValueNode.new((a.to_s + "." + b.to_s).to_f, "float") }
           end
 
           rule :int do
-            match(Integer) { |a| ValueNode.new a}
+            match(Integer) { |a| ValueNode.new a, "int"}
           end
 
           rule :char do
-            match(Char) {|a| ValueNode.new a.value} 
+            match(Char) {|a| ValueNode.new a.value, "char"} 
           end
 
           rule :identifier do

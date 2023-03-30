@@ -3,28 +3,42 @@ class Node
 
   def searchStackFrame name
     @@stackframe[name]
+  
+    currframe = @@stackframe
+    while true
+      if currframe.key? name
+        return currframe[name]
+      elsif currframe.key? :prev
+        currframe = currframe[:prev]
+      else
+        puts "no such variable"
+        break
+      end
+    end
   end
-
-  # arr = []
-
-  # arr.map!(:& to_i)
-
-  # new_arr = arr.map(:& to_i)
+  
+  def clearStackFrame 
+    @@stackframe = {}
+  end
 
   def modifyStackFrame name, val
-    
-    stackframe = @@stackframe
-    while true
-      if stackframe.key? name 
-        stackframe[name][:value] = val
-        break
-      elsif stackframe.key? :prev 
-        stackframe = stackframe[:prev]
-      end  
-    end
-
+    mStackFrame name, val, @@stackframe
   end
 
+  def mStackFrame name, val, frame
+    if frame.key? name
+      if val[:type] == frame[name][:type]
+        frame[name][:value] = val[:value]
+        return
+      else
+        puts "types do not match!"
+      end
+    elsif frame.key? :prev
+      mStackFrame name, val, frame[:prev]
+    else
+      puts "error bad var"
+    end
+  end
 
 
   def pushStackFrame
@@ -37,16 +51,16 @@ class Node
 end
 
 class BlockNode < Node
-  def initialize statement=""
+  def initialize statement = ""
     @statement = statement
   end
 
   def evaluate 
-    if (@statement == "")
+    if @statement == ""
       return
     end
     pushStackFrame
-    @statement.evaluate
+    @statement.evaluate 
     popStackFrame
   end
 end
@@ -59,7 +73,7 @@ class StatementNode < Node
 
   def evaluate 
     @statement.evaluate
-    @nextStatement.evaluate
+    @next.evaluate
   end
 end
 
@@ -71,7 +85,7 @@ class IfElseNode < Node
   end
 
   def evaluate 
-    if @boolean.evaluate
+    if @boolean.evaluate[:value]
       @block.evaluate
     else 
       @else.evaluate
@@ -86,7 +100,7 @@ class IfNode < Node
   end
 
   def evaluate
-    if @boolean
+    if @boolean.evaluate[:value]
       @block.evaluate
     end
   end
@@ -100,7 +114,13 @@ class SymbolNode < Node
   end
 
   def evaluate
-    eval("#{@lhs.evaluate} #{@symbol} #{@rhs.evaluate}")
+    lhs = @lhs.evaluate
+    rhs = @rhs.evaluate
+    if lhs[:type] != rhs[:type]
+      puts "not the same type!"
+    end
+    {:value => eval("#{lhs[:value]} #{@symbol} #{rhs[:value]}"),
+    :type => lhs[:type] }
   end
 end
 
@@ -113,17 +133,20 @@ class LogicNode < Node
 
   def evaluate
     if(@op == "and")
-      return @lhs.evaluate && @rhs.evaluate
+      return {:value => @lhs.evaluate[:value] && @rhs.evaluate[:value],
+              :type => "bool"}
+    elsif(@op == "or")
+      return {:value => @lhs.evaluate[:value] || @rhs.evaluate[:value],
+              :type => "bool"}
     end
-    if(@op == "or")
-      return @lhs.evaluate || @rhs.evaluate
-    end
+    {:value => eval("#{@lhs.evaluate[:value]} #{@op} #{@rhs.evaluate[:value]}"),
+    :type => "bool" }
   end
 end
 
 class ValueNode < Node
-  def initialize value
-    @value = value
+  def initialize value, type
+    @value = {:value => value, :type => type}
   end
 
   def evaluate
@@ -137,9 +160,7 @@ class VariableNode < Node
   end
 
   def evaluate
-    # TODO: om inte finns i närmaste stackframe, gå vidare till nästa, tills du kommer till den
-    # globala och därmed "sista" framen.
-    @@stackframe[@name][:value]
+    searchStackFrame @name
   end
 end
 
@@ -151,7 +172,13 @@ class VariableSetNode < Node
   end
 
   def evaluate
-    @@stackframe[@name] = {:value => @expression.evaluate, :type => @type}
+    expression = @expression.evaluate
+    if @type != expression[:type]
+      puts "types don't match!"
+      return
+    end
+
+    @@stackframe[@name] = {:value => expression[:value], :type => @type}
   end
 end
 
@@ -162,9 +189,7 @@ class VariableAssignmentNode < Node
   end
 
   def evaluate
-    # @@stackframe[@name][:value] = @expression.evaluate 
     modifyStackFrame @name, @expression.evaluate
-    #puts @@stackframe
   end
 
 end
