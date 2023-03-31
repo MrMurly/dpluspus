@@ -1,5 +1,17 @@
 require './rdparse'
-require './ast'
+#require './ast/Node'
+require './ast/BlockNode'  #Nuvarande lösning, Finns bättre sätt att läsa in filerna.
+require './ast/IfElseNode'
+require './ast/LogicNode'
+require './ast/IfNode'
+require './ast/StatementNode'
+require './ast/SymbolNode'
+require './ast/ValueNode'
+require './ast/VariableAssignmentNode'
+require './ast/VariableNode'
+require './ast/VariableSetNode'
+#Dir["/ast/*.rb"].each { |file| require "./#{file}" - 3} #Funkar inte förstår ej varför.
+#require './ast'
 
 class Variable
   def initialize name
