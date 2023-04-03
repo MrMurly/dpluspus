@@ -8,12 +8,20 @@ class VariableSetNode < Node
     end
   
     def evaluate
-      expression = @expression.evaluate
-      if @type != expression[:type]
-        puts "types don't match!"
-        return
+      begin
+        expression = @expression.evaluate
+
+        if @type != expression[:type]
+          raise "types don't match!"
+          return
+        end
+
+        @@stackframe[@name] = {:value => expression[:value], :type => @type}
+
+      rescue Exception => e 
+        puts e.message
       end
-  
-      @@stackframe[@name] = {:value => expression[:value], :type => @type}
+              
+      #@@stackframe[@name] = {:value => expression[:value], :type => @type}
     end
 end

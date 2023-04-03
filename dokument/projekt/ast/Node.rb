@@ -2,18 +2,22 @@ class Node
     @@stackframe = {}
   
     def searchStackFrame name
-      @@stackframe[name]
-    
-      currframe = @@stackframe
-      while true
-        if currframe.key? name
-          return currframe[name]
-        elsif currframe.key? :prev
-          currframe = currframe[:prev]
-        else
-          puts "no such variable"
-          break
+      begin
+        @@stackframe[name]
+      
+        currframe = @@stackframe
+        while true
+          if currframe.key? name
+            return currframe[name]
+          elsif currframe.key? :prev
+            currframe = currframe[:prev]
+          else
+            raise "Undefined variable #{name}"
+            break
+          end
         end
+      rescue Exception => e 
+        puts e.message
       end
     end
     
@@ -26,17 +30,21 @@ class Node
     end
   
     def mStackFrame name, val, frame
-      if frame.key? name
-        if val[:type] == frame[name][:type]
-          frame[name][:value] = val[:value]
-          return
+      begin
+        if frame.key? name
+          if val[:type] == frame[name][:type]
+            frame[name][:value] = val[:value]
+            return
+          else
+            raise "types do not match!"
+          end
+        elsif frame.key? :prev
+          mStackFrame name, val, frame[:prev]
         else
-          puts "types do not match!"
+          raise "error bad var"
         end
-      elsif frame.key? :prev
-        mStackFrame name, val, frame[:prev]
-      else
-        puts "error bad var"
+      rescue Exception => e 
+        puts e.message
       end
     end
   

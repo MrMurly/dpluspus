@@ -8,12 +8,18 @@ class SymbolNode < Node
     end
   
     def evaluate
-      lhs = @lhs.evaluate
-      rhs = @rhs.evaluate
-      if lhs[:type] != rhs[:type]
-        puts "not the same type!"
+      begin
+        lhs = @lhs.evaluate
+        rhs = @rhs.evaluate
+        if lhs[:type] != rhs[:type]
+          raise "Not possible to execute with different types!"
+        end
+        {:value => eval("#{lhs[:value]} #{@symbol} #{rhs[:value]}"),
+        :type => lhs[:type] }
+
+      rescue Exception => e #user defined exception
+        puts e.message
+
       end
-      {:value => eval("#{lhs[:value]} #{@symbol} #{rhs[:value]}"),
-      :type => lhs[:type] }
     end
 end
