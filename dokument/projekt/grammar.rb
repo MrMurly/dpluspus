@@ -10,6 +10,10 @@ require './ast/ValueNode'
 require './ast/VariableAssignmentNode'
 require './ast/VariableNode'
 require './ast/VariableSetNode'
+require './ast/DeclareFuncNode'
+require './ast/FuncCallNode'
+require './ast/ParamNode'
+require './ast/LoopNode'
 #Dir["/ast/*.rb"].each { |file| require "./#{file}" - 3} #Funkar inte förstår ej varför.
 #require './ast'
 
@@ -45,6 +49,9 @@ class DnD
           token(/else/) { |m| m}
           token(/True/) { |m| m}
           token(/False/) { |m| m}
+          token(/for/) { |m| m}
+          token(/while/) { |m| m}
+
 
           token(/char/) {|m| m}
           token(/int/) {|m| m}
@@ -66,12 +73,17 @@ class DnD
           token(/./) {|m| m }
 
           start :begin do 
+            match(:while)
+            match(:for)
+            match(:function)
+            match(:call)
             match(:varset)
             match(:boolean)
             match(:if)
             match(:block)
           end
 
+          #BLOCK
           rule :block do
             match('{', :statements, '}') {|_, a, _| BlockNode.new(a)}
             match('{','}') {|_, _| BlockNode.new }
@@ -86,9 +98,48 @@ class DnD
             match(:varset)
             match(:if)
             match(:boolean)
-            #match(:for)
+            match(:for)
+            match(:while)
+          end
+          #END
+
+          #FUNCTIONS
+          rule :function do
+            match(:primitive, :identifier, "(", :params, ")", :block) {|a, b, _, c, _, d| DeclareFuncNode.new(a, b, c, d)}
+            match(:primitive, :identifier, "(", ")", :block) {|a, b, _, _, d| DeclareFuncNode.new(a, b, nil, d)}
           end
 
+          rule :call do
+            match(:identifier, "(", :callparams, ")") { |a, _, b, _| FuncCallNode.new(a, b)}
+            match(:identifier, "(", ")") { |a, _, _| FuncCallNode.new(a, nil)}
+          end
+
+          rule :params do
+            match(:params, ",", :param) {|a, _, b| ParamNode.new(a, b)}
+            match(:param) 
+          end
+
+          rule :param do
+            match(:primitive, :identifier) {|a, b| [{:name => b, :type => a}]}
+          end
+          
+          rule :callparams do 
+            match(:callparams, ",", :var) {|a, _, b| ParamNode.new(a, b)}
+            match(:var) {|a| [a]}
+          end
+          #END
+
+          #LOOPS
+          rule :while do
+            match("while", "(", :boolean, ")", :block) {|_, _, a, _, b| LoopNode.new(nil, nil, a, b)}
+          end
+          
+          rule :for do
+            match("for", "(", :varset, ";",  :varset, ";", :boolean,")", :block) {|_,_, a, _, b, _, c, _, d| LoopNode.new(a, b, c, d)}
+          end
+          #END
+
+          #IF-STATEMENTS
           rule :if do 
             match('if', '(', :boolean, ')', :block, :else) {|_,_, a, _, b, c| IfElseNode.new(a, b, c)}
             match('if', '(', :boolean, ')', :block) {|_,_, a, _, b| IfNode.new(a, b)}
@@ -99,7 +150,9 @@ class DnD
             match('else', 'if', '(', :boolean, ')', :block) {|_, _, _, a, _, b| IfNode.new(a, b)}
             match('else', :block) {|_, a| a}
           end
+          #END
 
+          #LOGIC/ARITEMIK
           rule :boolean do
               match(:boolean, "||", :and) {|a, _, b| LogicNode.new a, "or", b}
               match(:and)
@@ -139,7 +192,6 @@ class DnD
             match('True') { |a| ValueNode.new true, "bool"}
             match('False') {|a| ValueNode.new false, "bool"}
             match(:var)
-            #match("(", :boolean, ")")
           end
           
           rule :var do
@@ -187,6 +239,7 @@ class DnD
           rule :name do
             match(/[a-zA-Z]\w*/)
           end
+          #END
 
         end
       end

@@ -124,6 +124,13 @@ class Variables < Test::Unit::TestCase
         parser.testParse("int a = 0")
         parser.testParse("a = a + 1")
         assert_equal(parser.testParse("a"), {:value => 1, :type => "int"})
+        parser.testParse("a = a + 1")
+        parser.testParse("a = a + 1")
+        parser.testParse("a = a + 1")
+        parser.testParse("a = a + 1")
+        parser.testParse("a = a + 1")
+        assert_equal(parser.testParse("a"), {:value => 6, :type => "int"})
+
     end
 end    
 
@@ -194,4 +201,112 @@ class Block < Test::Unit::TestCase
 
     end
 end
+
+class Function < Test::Unit::TestCase
+    def testDeclaringFunc
+        parser = DnD.new
+        parser.log false
+        func = parser.testParse("
+        int test() {
+            int a = 0;
+        }
+        ")
+
+        assert_equal(func[:block].is_a?(BlockNode), true)
+        assert_equal(func[:parameters], nil)
+        assert_equal(func[:returnType], "int")
+    end
+
+    def testCallingFunc
+        parser = DnD.new
+        parser.log false
+
+        parser.testParse("int a = 0")
+        assert_equal(parser.testParse("a == 0"), {:type=>"bool", :value=>true})
+
+        parser.testParse("
+        int heltal() {
+
+            a = 12;
+        } 
+        ")
+        parser.testParse("heltal()")
+        assert_equal(parser.testParse("a == 12"), {:type=>"bool", :value=>true})
+
+
+    end
+
+    def diffParameters
+        parser = DnD.new
+        parser.log false
+        parser.testParse("int a = 0")
+        assert_equal(parser.testParse("a == 0"), {:type=>"bool", :value=>true})
+
+        parser.testParse("
+        int heltal(int tal) {
+
+            a = tal;
+        } 
+        ")
+        parser.testParse("heltal(12)")
+        assert_equal(parser.testParse("a == 12"), {:type=>"bool", :value=>true})
+
+        parser.testParse("char b = 'p'")
+        assert_equal(parser.testParse("b == 'p'"), {:type=>"bool", :value=>true})
+
+        parser.testParse("
+        int heltal(char character) {
+
+            b = character;
+        } 
+        ")
+        parser.testParse("heltal('d')")
+        assert_equal(parser.testParse("b == 'd'"), {:type=>"bool", :value=>true})
+
+
+        parser.testParse("int c = 0")
+        assert_equal(parser.testParse("c == 0"), {:type=>"bool", :value=>true})
+
+        parser.testParse("
+        int heltal(int a, int b) {
+
+            c = a % b;
+        } 
+        ")
+        parser.testParse("heltal(5, 3)")
+        assert_equal(parser.testParse("c == 2"), {:type=>"bool", :value=>true})
+
+    end
+end
     
+class Loops < Test::Unit::TestCase 
+
+    def testForLoop 
+        parser = DnD.new
+        parser.log false
+        
+        parser.testParse("int a = 0")
+
+        parser.testParse("
+        for (int i = 0; i = i + 1; i < 10) {
+            a = a + 1;
+        }")
+
+        assert_equal(parser.testParse("a"), {:type=>"int", :value=>10})
+    end
+
+    def testWhileLoop
+        parser = DnD.new
+        parser.log false
+        
+        parser.testParse("int a = 0")
+
+        parser.testParse("
+        while (a < 10) {
+            a = a + 1;
+        }")
+
+        assert_equal(parser.testParse("a"), {:type=>"int", :value=>10})
+    end
+
+end

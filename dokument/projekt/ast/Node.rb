@@ -16,8 +16,8 @@ class Node
             break
           end
         end
-      rescue Exception => e 
-        puts e.message
+      # rescue Exception => e 
+      #   puts e.message
       end
     end
     
@@ -43,8 +43,8 @@ class Node
         else
           raise "error bad var"
         end
-      rescue Exception => e 
-        puts e.message
+      # rescue Exception => e 
+      #   puts e.message
       end
     end
   

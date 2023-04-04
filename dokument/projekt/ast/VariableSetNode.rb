@@ -18,8 +18,8 @@ class VariableSetNode < Node
 
         @@stackframe[@name] = {:value => expression[:value], :type => @type}
 
-      rescue Exception => e 
-        puts e.message
+      # rescue Exception => e 
+      #   puts e.message
       end
               
       #@@stackframe[@name] = {:value => expression[:value], :type => @type}

@@ -23,8 +23,8 @@ class LogicNode < Node
         {:value => eval("#{@lhs.evaluate[:value]} #{@op} #{@rhs.evaluate[:value]}"),
         :type => "bool" }
 
-      rescue Exception => e #
-        puts e.message
+      # rescue Exception => e 
+      #   puts e.message
         
 
       end
