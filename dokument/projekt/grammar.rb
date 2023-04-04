@@ -18,7 +18,7 @@ require './ast/LoopNode'
 #require './ast'
 
 #hasfhsg
-
+#testing testing
 class Variable
   def initialize name
     @name = name
