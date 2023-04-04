@@ -17,6 +17,8 @@ require './ast/LoopNode'
 #Dir["/ast/*.rb"].each { |file| require "./#{file}" - 3} #Funkar inte förstår ej varför.
 #require './ast'
 
+#hasfhsg
+
 class Variable
   def initialize name
     @name = name
