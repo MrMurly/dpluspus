@@ -14,6 +14,8 @@ require './ast/DeclareFuncNode'
 require './ast/FuncCallNode'
 require './ast/ParamNode'
 require './ast/LoopNode'
+require './ast/MemberNode'
+require './ast/ListNode'
 #Dir["/ast/*.rb"].each { |file| require "./#{file}" - 3} #Funkar inte förstår ej varför.
 #require './ast'
 
@@ -76,6 +78,7 @@ class DnD
           token(/./) {|m| m }
 
           start :begin do 
+            match(:list)
             match(:while)
             match(:for)
             match(:function)
@@ -141,6 +144,36 @@ class DnD
             match("for", "(", :varset, ";",  :varset, ";", :boolean,")", :block) {|_,_, a, _, b, _, c, _, d| LoopNode.new(a, b, c, d)}
           end
           #END
+
+          # rule :list do
+          #   #match(:primitive, "[", "]", :identifier) {|a, _, _, b| ListNode.new(a, b, nil)}
+          #   match(:primitive, "[", "]", :identifier, "=", "[", :members, "]") {|a, _, _, b, _, _, c, _| ListNode.new(a, b, c)}
+          #   match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)}
+          # end
+
+          # rule :members do
+          #   match(:members, ",", :member) {|a, _, b| MemberNode.new(a, b)}
+          #   match(:member) {|a| MemberNode.new(a, nil)}
+          # end
+
+          # rule :member do
+          #   match(:var) {|a| [a]}
+          # end
+
+          rule :list do
+            #match(:primitive, "[", "]", :identifier) {|a, _, _, b| ListNode.new(a, b, nil)}
+            match(:primitive, "[", "]", :identifier, "=", "[", :members, "]") {|a, _, _, b, _, _, c, _| ListNodeU2.new(a, b, c)}
+            match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNodeU2.new(a, b, nil)}
+          end
+
+          rule :members do
+            match(:members, ",", :member) {|a, _, b| MemberNodeU2.new(a, b)}
+            match(:member) {|a| MemberNodeU2.new(a, nil)}
+          end
+
+          rule :member do
+            match(:var) {|a| a}
+          end
 
           #IF-STATEMENTS
           rule :if do 
