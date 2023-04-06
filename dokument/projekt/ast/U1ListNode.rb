@@ -10,7 +10,6 @@ class ListNode < Node
 
     def evaluate
         begin
-            #p "M1 #{@members}"
             if @members
 
                 @members = @members.evaluate
@@ -25,8 +24,7 @@ class ListNode < Node
             else
                 @members = []
             end
-            #p "M2 #{@members}"
-
+            
             @@stackframe[@name] = {
                 :type => @listType,
                 :list => @members

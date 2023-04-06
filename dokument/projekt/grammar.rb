@@ -1,5 +1,5 @@
 require './rdparse'
-Dir["./ast/*.rb"].each { |file| require file } #Funkar inte förstår ej varför.
+Dir["./ast/*.rb"].each { |file| require file } 
 
 class Variable
   def initialize name
@@ -199,7 +199,7 @@ class DnD
             match(:int)
             match(:char)
             match(:varget)
-            #match(:list)
+            match(:list)
           end
 
           rule :float do
