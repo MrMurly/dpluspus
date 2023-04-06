@@ -1,27 +1,6 @@
 require './rdparse'
-#require './ast/Node'
-require './ast/BlockNode'  #Nuvarande lösning, Finns bättre sätt att läsa in filerna.
-require './ast/IfElseNode'
-require './ast/LogicNode'
-require './ast/IfNode'
-require './ast/StatementNode'
-require './ast/SymbolNode'
-require './ast/ValueNode'
-require './ast/VariableAssignmentNode'
-require './ast/VariableNode'
-require './ast/VariableSetNode'
-require './ast/DeclareFuncNode'
-require './ast/FuncCallNode'
-require './ast/ParamNode'
-require './ast/LoopNode'
-require './ast/U1MemberNode'
-require './ast/U1ListNode'
-#Dir["/ast/*.rb"].each { |file| require "./#{file}" - 3} #Funkar inte förstår ej varför.
-#require './ast'
+Dir["./ast/*.rb"].each { |file| require file } #Funkar inte förstår ej varför.
 
-#hasfhsg
-#testing testing
-#2test
 class Variable
   def initialize name
     @name = name
@@ -146,9 +125,9 @@ class DnD
           #END
 
           rule :list do
-            match(:primitive, "[", "]", :identifier) {|a, _, _, b| ListNode.new(a, b, nil)}
             match(:primitive, "[", "]", :identifier, "=", "[", :members, "]") {|a, _, _, b, _, _, c, _| ListNode.new(a, b, c)}
             match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)}
+            match(:primitive, "[", "]", :identifier) {|a, _, _, b| ListNode.new(a, b, nil)}
           end
 
           rule :members do
