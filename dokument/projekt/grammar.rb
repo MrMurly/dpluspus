@@ -2,20 +2,23 @@ require './rdparse'
 Dir["./ast/*.rb"].each { |file| require file } 
 
 class Variable
+  attr_reader :name
   def initialize name
     @name = name
   end
-  def name
-    @name
+end
+
+class ClassIdentity
+  attr_reader :name
+  def initialize name
+    @name = name
   end
 end
 
 class Char
+  attr_reader :value
   def initialize value
     @value = value.delete "'"
-  end
-  def value
-    @value
   end
 end
 
@@ -29,6 +32,9 @@ class DnD
 
           token(/\s+/)
           #token(/\d+/) {|m| m.to_i }
+          token(/class/) { |m| m}
+          token(/new/) { |m| m}
+
           token(/if/) { |m| m}
           token(/else/) { |m| m}
           token(/True/) { |m| m}
@@ -52,7 +58,8 @@ class DnD
           token(/>/) {|m| m}
           token(/</) {|m| m}
           token(/\'.\'/) {|m| Char.new m}
-          token(/[a-zA-Z]\w*/) {|m| Variable.new m}
+          token(/[A-Z]\w*/) {|m| ClassIdentity.new m}
+          token(/[a-z]\w*/) {|m| Variable.new m}
           token(/\d+/) {|m| m.to_i}
           token(/./) {|m| m }
 
@@ -86,6 +93,28 @@ class DnD
             match(:for)
             match(:while)
           end
+          #END
+
+          #CLASSES
+          
+          rule :class do 
+            match('class', Variable, '{', :classblock, '}') { |_, a, _, b, _| ClassNode.new(a, b)}
+          end
+
+          rule :classblock do
+            match(:function, :classblock) {|a, b| ClassBlockFuncNode.new(a, b)}
+            match(:primitive, :identifier, ";", :classblock) {|a, b, _, c| ClassBlockVarNode.new(a, b, c)}
+            match(:function) 
+            match(:primitive, :identifier, ";") {|a, b, _| ClassBlockVarNode.new(a, b, nil)} 
+          end
+          
+          # class car { ..... }
+          # car Volvo;
+          # car Volvo = new Car(12,3,3,3,3,45,1241);
+          rule :classinit do 
+            match('new', ClassIdentity, '(', :callparams, ')') {|_, a, _, b, _| ClassInitNode.new(a, b)} #parameters and class initalisation
+          end
+
           #END
 
           #FUNCTIONS
@@ -124,6 +153,7 @@ class DnD
           end
           #END
 
+          #COMPLEX DATA TYPES
           rule :list do
             match(:primitive, "[", "]", :identifier, "=", "[", :members, "]") {|a, _, _, b, _, _, c, _| ListNode.new(a, b, c)}
             match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)}
@@ -138,6 +168,7 @@ class DnD
           rule :member do
             match(:var) {|a| [a]}
           end
+          #END
 
           #IF-STATEMENTS
           rule :if do 
@@ -223,9 +254,16 @@ class DnD
           end
 
           rule :varset do
-            match(:identifier, '=', :boolean) {|a, _, b| VariableAssignmentNode.new a, b}
-            match(:primitive, :identifier, '=', :boolean) {|a, b, _, c| VariableSetNode.new b, a, c} 
+            match(:identifier, '=', :varset2) {|a, _, b| VariableAssignmentNode.new a, b}
+            match(:primitive, :identifier, '=', :varset2) {|a, b, _, c| VariableSetNode.new b, a, c} 
           end
+
+          rule :varset2 do
+            match(:boolean)
+            match(:classinit)
+          end
+
+
 
           rule :primitive do
             match('char')
@@ -234,6 +272,7 @@ class DnD
             match('bool')
             match('string')
             match('void')
+            match(ClassIdentity) { |a| a.name }
           end
           
           rule :name do
