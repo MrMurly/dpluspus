@@ -310,3 +310,22 @@ class Loops < Test::Unit::TestCase
     end
 
 end
+
+class List < Test::Unit::TestCase 
+    def testLists
+        parser = DnD.new
+        parser.log false
+
+        parser.testParse("int[] test = [1, 2]")
+
+        assert_equal(parser.testParse("test"), 
+        {:type=>"int", :list=>[{:value=>1, :type=>"int"}, {:value=>2, :type=>"int"}]})
+
+        parser.testParse("int[] one = [1]")
+        parser.testParse("int[] two = [2]")
+        parser.testParse("int[] com = [one, two]")
+        assert_equal(parser.testParse("com"), 
+        {:type=>"int", :list=>[{:type=>"int", :list=>[{:value=>1, :type=>"int"}]}, {:type=>"int", :list=>[{:value=>2, :type=>"int"}]}]})
+    end
+
+end
