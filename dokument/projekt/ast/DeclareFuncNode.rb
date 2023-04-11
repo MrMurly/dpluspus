@@ -14,7 +14,7 @@ class DeclareFuncNode < Node
             @parameters = @parameters.evaluate
         end
         @@stackframe[@name] = {
-            :returnType => @returnType,
+            :return => {:type => @returnType, :val => nil},
             :parameters => @parameters,
             :block => @block
         }

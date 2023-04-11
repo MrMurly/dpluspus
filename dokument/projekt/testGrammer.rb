@@ -329,3 +329,22 @@ class List < Test::Unit::TestCase
     end
 
 end
+
+class Recursion < Test::Unit::TestCase
+    def testFuncRecursion
+        parser = DnD.new
+        parser.log true
+
+        parser.testParse("int res = 1")
+        parser.testParse("
+        int fac(int val) {
+            if(val > 0) {
+                res = res * val;
+                fac(val - 1);
+            };
+        }")
+
+        parser.testParse("fac(3)")
+        assert_equal(parser.testParse("res == 6"), {:type=>"bool", :value=>true})
+    end
+end

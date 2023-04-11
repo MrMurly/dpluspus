@@ -30,22 +30,21 @@ class Node
     end
   
     def mStackFrame name, val, frame
-      begin
-        if frame.key? name
-          if val[:type] == frame[name][:type]
-            frame[name][:value] = val[:value]
-            return
-          else
-            raise "types do not match!"
-          end
-        elsif frame.key? :prev
-          mStackFrame name, val, frame[:prev]
+      puts @@stackframe
+      if frame.key? name
+        if val[:type] == frame[name][:type]
+          frame[name][:value] = val[:value]
+          return
         else
-          raise "error bad var"
+          raise "types do not match!"
         end
-      # rescue Exception => e 
-      #   puts e.message
+      elsif frame.key? :prev
+        mStackFrame name, val, frame[:prev]
+      else
+        puts @@stackframe
+        raise "error; #{name} doesn't exist!"
       end
+      
     end
   
   

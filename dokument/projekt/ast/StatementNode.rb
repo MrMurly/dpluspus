@@ -7,7 +7,9 @@ class StatementNode < Node
     end
   
     def evaluate 
-      @statement.evaluate
-      @next.evaluate
+      if @next.is_a? StatementNode 
+        @statement = @next.evaluate.concat(@statement)
+    end
+    @statement
     end
 end

@@ -2,8 +2,6 @@ require './ast/Node'
 
 
 
-# {}
-
 
 class FuncCallNode < Node
 
@@ -30,6 +28,8 @@ class FuncCallNode < Node
         
         func = searchStackFrame(@funcname)
         paramlen = func[:parameters].length
+        p @parameters
+        @parameters = @parameters.evaluate
         if paramlen != @parameters.length
             raise "Expected #{paramlen} number of arguments, but #{@parameters.length} was given."
         end

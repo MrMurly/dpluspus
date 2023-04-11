@@ -1,7 +1,7 @@
 require './ast/Node'
 
 class ClassBlockNode < Node
-    def initialize function: func, 
+    def initialize name, block
         @name = name
         @block = block
     end

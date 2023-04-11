@@ -1,0 +1,13 @@
+
+
+
+int main() {
+    print(1);
+    int a = 2;
+
+    if (a == 2) {
+        a = 5;
+        print(a);
+    };
+    
+}

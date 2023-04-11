@@ -3,16 +3,16 @@ require './ast/Node'
 class ParamNode < Node
 
     def initialize(childs, param)
-        @param = childs
         @childs = childs
+        @param = param
     end
 
 
    # [{...}]
 
     def evaluate
-        if @child.is_a? ParamNode 
-            @param = @child.evaluate.concat(@param)
+        if @childs.is_a? ParamNode 
+            @param += @childs.evaluate
         end
         @param
     end

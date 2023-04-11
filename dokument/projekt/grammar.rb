@@ -32,6 +32,8 @@ class DnD
 
           token(/\s+/)
           #token(/\d+/) {|m| m.to_i }
+          token(/main/) { |m| m}
+          token(/print/) {|m| m}
           token(/class/) { |m| m}
           token(/new/) { |m| m}
 
@@ -63,16 +65,9 @@ class DnD
           token(/\d+/) {|m| m.to_i}
           token(/./) {|m| m }
 
-          start :begin do 
-            match(:list)
-            match(:while)
-            match(:for)
-            match(:function)
-            match(:call)
-            match(:varset)
-            match(:boolean)
-            match(:if)
-            match(:block)
+          start :main do
+            match('int', 'main', '(', ')', :block) { |_, _, _, _, a| a }
+            match(:function, :main) {|a, b| MainNode.new(a, b)}
           end
 
           #BLOCK
@@ -82,38 +77,51 @@ class DnD
           end
 
           rule :statements do
-            match(:statement, ';', :statements) {|a, _, b| StatementNode.new(a, b)}
-            match(:statement, ';') 
+            match(:statement, ';', :statements) {|a, _, b| StatementNode.new([a], b)}
+            match(:statement, ';') {|a, _| [a]}
           end
 
           rule :statement do
+            match(:call)
             match(:varset)
             match(:if)
             match(:boolean)
             match(:for)
             match(:while)
+            # match(:return)
+            match(:print)
+          end
+
+
+          # rule :return do
+          #   match('return', :boolean) {|_, a| ReturnNode.new(a)}
+          # end    
+          
+          rule :print do 
+            match('print', '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
           end
           #END
 
+
           #CLASSES
           
-          rule :class do 
-            match('class', Variable, '{', :classblock, '}') { |_, a, _, b, _| ClassNode.new(a, b)}
-          end
+          # rule :class do 
+          #   match('class', Variable, '{', :classblock, '}') { |_, a, _, b, _| ClassNode.new(a, b)}
+          # end
 
-          rule :classblock do
-            match(:function, :classblock) {|a, b| ClassBlockFuncNode.new(a, b)}
-            match(:primitive, :identifier, ";", :classblock) {|a, b, _, c| ClassBlockVarNode.new(a, b, c)}
-            match(:function) 
-            match(:primitive, :identifier, ";") {|a, b, _| ClassBlockVarNode.new(a, b, nil)} 
-          end
+          # rule :classblock do
+          #   match(:function, :classblock) {|a, b| ClassBlockFuncNode.new(a, b)}
+          #   match(:primitive, :identifier, ";", :classblock) {|a, b, _, c| ClassBlockVarNode.new(a, b, c)}
+          #   match(:function) 
+          #   match(:primitive, :identifier, ";") {|a, b, _| ClassBlockVarNode.new(a, b, nil)} 
+          # end
           
-          # class car { ..... }
-          # car Volvo;
-          # car Volvo = new Car(12,3,3,3,3,45,1241);
-          rule :classinit do 
-            match('new', ClassIdentity, '(', :callparams, ')') {|_, a, _, b, _| ClassInitNode.new(a, b)} #parameters and class initalisation
-          end
+          # # class car { ..... }
+          # # car Volvo;
+          # # car Volvo = new Car(12,3,3,3,3,45,1241);
+          # rule :classinit do 
+          #   match('new', ClassIdentity, '(', :callparams, ')') {|_, a, _, b, _| ClassInitNode.new(a, b)} #parameters and class initalisation
+          # end
 
           #END
 
@@ -138,8 +146,8 @@ class DnD
           end
           
           rule :callparams do 
-            match(:callparams, ",", :var) {|a, _, b| ParamNode.new(a, b)}
-            match(:var) {|a| [a]}
+            match(:callparams, ",", :boolean) {|a, _, b| ParamNode.new(a, b)}
+            match(:boolean) {|a| [a]}
           end
           #END
 
@@ -155,7 +163,7 @@ class DnD
 
           #COMPLEX DATA TYPES
           rule :list do
-            match(:primitive, "[", "]", :identifier, "=", "[", :members, "]") {|a, _, _, b, _, _, c, _| ListNode.new(a, b, c)}
+            match(:primitive, "[", "]", :identifier, "=" ,"[", :members, "]") {|a, _, _, b, _, _, c, _| ListNode.new(a, b, c)}
             match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)}
             match(:primitive, "[", "]", :identifier) {|a, _, _, b| ListNode.new(a, b, nil)}
           end
@@ -230,7 +238,6 @@ class DnD
             match(:int)
             match(:char)
             match(:varget)
-            match(:list)
           end
 
           rule :float do
@@ -260,7 +267,6 @@ class DnD
 
           rule :varset2 do
             match(:boolean)
-            match(:classinit)
           end
 
 
@@ -311,4 +317,4 @@ class DnD
     end
 end
 
-DnD.new.parse
+#DnD.new.parse
