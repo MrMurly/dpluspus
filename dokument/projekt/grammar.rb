@@ -83,6 +83,7 @@ class DnD
 
           rule :statement do
             match(:call)
+            match(:findelement)
             match(:varset)
             match(:if)
             match(:boolean)
@@ -90,6 +91,7 @@ class DnD
             match(:while)
             # match(:return)
             match(:print)
+            match(:list)
           end
 
 
@@ -166,6 +168,10 @@ class DnD
             match(:primitive, "[", "]", :identifier, "=" ,"[", :members, "]") {|a, _, _, b, _, _, c, _| ListNode.new(a, b, c)}
             match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)}
             match(:primitive, "[", "]", :identifier) {|a, _, _, b| ListNode.new(a, b, nil)}
+          end
+
+          rule :findelement do
+            match(:identifier, "[", :int, "]") {|a, _, b, _| FindElementNode.new(a, b)}
           end
 
           rule :members do
