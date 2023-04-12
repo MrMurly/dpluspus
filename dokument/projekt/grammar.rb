@@ -105,11 +105,11 @@ class DnD
           #CLASSES
           
           rule :class do 
-            match('class', :identifier, '{', :classvarblock, ';', :classfuncblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
-            match('class', :identifier, '{', :classfuncblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
-            match('class', :identifier, '{', :classvarblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
-            match('class', :identifier, '{' '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
-            
+            match('class', :classIdentifier, '{', :classvarblock, :classfuncblock, '}') { |_, a, _, b, c, _| ClassNode.new(a, b, c)}
+            match('class', :classIdentifier, '{', :classfuncblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match('class', :classIdentifier, '{', :classvarblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match('class', :classIdentifier, '{' '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+          
           end
 
           rule :classvarblock do
@@ -118,15 +118,19 @@ class DnD
           end
 
           rule :classfuncblock do
-            match(:primitive, :identifier, '(', :params, ')', :block, :classfuncblock) { |a, b, _, c, _, d, e| ClassBlockFuncNode.new(a, b, c, d, e) }
-            match(:primitive, :identifier, '(', :params, ')', :block) {|a, b, _, c, _, d| ClassBlockFuncNode.new(a, b , c, d, nil)}
+            match(:primitive, :identifier, '(', :params, ')', :block, ';', :classfuncblock) { |a, b, _, c, _, d, _, e| ClassBlockFuncNode.new(a, b, c, d, e) }
+            match(:primitive, :identifier, '(', :params, ')', :block, ';') {|a, b, _, c, _, d, _| ClassBlockFuncNode.new(a, b , c, d, nil)}
           end
           
           # class car { ..... }
           # car Volvo;
           # car Volvo = new Car(12,3,3,3,3,45,1241);
           rule :classinit do 
-            match('new', ClassIdentity, '(', :callparams, ')') {|_, a, _, b, _| ClassInitNode.new(a, b)} #parameters and class initalisation
+            match('new', :classIdentifier) {|_, a| } #parameters and class initalisation
+          end
+
+          rule :classIdentifier do
+            match(ClassIdentity) {|a| a.name }
           end
 
           #END
@@ -286,6 +290,7 @@ class DnD
           end
 
           rule :varset2 do
+            match(:classinit)
             match(:boolean)
           end
 
