@@ -8,7 +8,7 @@ require 'test/unit'
 class TestMain < Test::Unit::TestCase
     def testMain
         parser = DnD.new
-        parser.log false
+        parser.log true
 
         Dir["./tests/*.dpp"].each { |f| 
             file = File.open(f) 
