@@ -1,12 +1,25 @@
 require './ast/Node'
 
 class ClassNode < Node
-    def initialize name, block
+    def initialize name, variables, methods
         @name = name
-        @block = block
+        @variables = variables
+        @methods = methods
     end
 
     def evaluate
-        @@stackframe[@name] = {:block => @block, :type => "class"}
+        if @methods
+            @methods = @methods.evaluate
+        else
+            @methods = {}
+        end
+
+        if @variables
+            @variables = @variables.evaluate
+        else 
+            @variables = {}
+        end
+
+        @@stackframe[@name] = {:methods => @methods, :members => @variables, :type => "class"}
     end
 end

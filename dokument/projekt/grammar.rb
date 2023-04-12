@@ -56,7 +56,12 @@ class DnD
           token(/\w+/) {|m| m} 
 
           start :main do
+<<<<<<< HEAD
             match(:_int, :_main, '(', ')', :block) { |_, _, _, _, a| a }
+=======
+            match('int', 'main', '(', ')', :block) { |_, _, _, _, a| a }
+            match(:class, :main ) {|a, b| MainNode.new(a, b)}
+>>>>>>> 3bc8f3e (reworked how classes work based on feedback)
             match(:function, :main) {|a, b| MainNode.new(a, b)}
           end
 
@@ -99,23 +104,30 @@ class DnD
 
           #CLASSES
           
-          # rule :class do 
-          #   match('class', Variable, '{', :classblock, '}') { |_, a, _, b, _| ClassNode.new(a, b)}
-          # end
+          rule :class do 
+            match('class', :identifier, '{', :classvarblock, ';', :classfuncblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match('class', :identifier, '{', :classfuncblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match('class', :identifier, '{', :classvarblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match('class', :identifier, '{' '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            
+          end
 
-          # rule :classblock do
-          #   match(:function, :classblock) {|a, b| ClassBlockFuncNode.new(a, b)}
-          #   match(:primitive, :identifier, ";", :classblock) {|a, b, _, c| ClassBlockVarNode.new(a, b, c)}
-          #   match(:function) 
-          #   match(:primitive, :identifier, ";") {|a, b, _| ClassBlockVarNode.new(a, b, nil)} 
-          # end
+          rule :classvarblock do
+            match(:primitive, :identifier, ";", :classvarblock) {|a, b, _, c| ClassBlockVarNode.new(a, b, c)}
+            match(:primitive, :identifier, ";") {|a, b, _| ClassBlockVarNode.new(a, b, nil)} 
+          end
+
+          rule :classfuncblock do
+            match(:primitive, :identifier, '(', :params, ')', :block, :classfuncblock) { |a, b, _, c, _, d, e| ClassBlockFuncNode.new(a, b, c, d, e) }
+            match(:primitive, :identifier, '(', :params, ')', :block) {|a, b, _, c, _, d| ClassBlockFuncNode.new(a, b , c, d, nil)}
+          end
           
-          # # class car { ..... }
-          # # car Volvo;
-          # # car Volvo = new Car(12,3,3,3,3,45,1241);
-          # rule :classinit do 
-          #   match('new', ClassIdentity, '(', :callparams, ')') {|_, a, _, b, _| ClassInitNode.new(a, b)} #parameters and class initalisation
-          # end
+          # class car { ..... }
+          # car Volvo;
+          # car Volvo = new Car(12,3,3,3,3,45,1241);
+          rule :classinit do 
+            match('new', ClassIdentity, '(', :callparams, ')') {|_, a, _, b, _| ClassInitNode.new(a, b)} #parameters and class initalisation
+          end
 
           #END
 
