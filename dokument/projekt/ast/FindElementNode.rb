@@ -8,9 +8,15 @@ class FindElementNode < Node
 
     def evaluate
         @index = @index.evaluate[:value]
-        puts "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-        element = searchStackFrame(@listName)[:list][@index - 1]
+        list = searchStackFrame(@listName)[:list]
+        begin
+            if @index <= 0 || @index > list.length
+                raise "index: #{@index} out of bounds of list length"
+            end
+        end
+        element = list[@index - 1]
 
+        puts element
         element
     end
 end

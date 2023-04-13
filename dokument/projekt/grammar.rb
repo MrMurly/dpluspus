@@ -77,12 +77,13 @@ class DnD
           end
 
           rule :statements do
-            match(:statement, ';', :statements) {|a, _, b| StatementNode.new([a], b)}
+            match(:statement, ';', :statements) {|a, _, b| StatementNode.new(a, b)}
             match(:statement, ';') {|a, _| [a]}
           end
 
           rule :statement do
             match(:call)
+            match(:list)
             match(:findelement)
             match(:varset)
             match(:if)
@@ -91,7 +92,7 @@ class DnD
             match(:while)
             # match(:return)
             match(:print)
-            match(:list)
+            
           end
 
 
@@ -101,6 +102,7 @@ class DnD
           
           rule :print do 
             match('print', '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
+            match('print', '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
           end
           #END
 
@@ -170,9 +172,6 @@ class DnD
             match(:primitive, "[", "]", :identifier) {|a, _, _, b| ListNode.new(a, b, nil)}
           end
 
-          rule :findelement do
-            match(:identifier, "[", :int, "]") {|a, _, b, _| FindElementNode.new(a, b)}
-          end
 
           rule :members do
             match(:members, ",", :member) {|a, _, b| MemberNode.new(a, b)}
@@ -182,6 +181,11 @@ class DnD
           rule :member do
             match(:var) {|a| [a]}
           end
+
+          rule :findelement do
+            match(:identifier, "[", :int, "]") {|a, _, b, _| FindElementNode.new(a, b)}
+          end
+
           #END
 
           #IF-STATEMENTS
@@ -323,4 +327,4 @@ class DnD
     end
 end
 
-#DnD.new.parse
+DnD.new.parse
