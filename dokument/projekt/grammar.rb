@@ -56,12 +56,7 @@ class DnD
           token(/\w+/) {|m| m} 
 
           start :main do
-<<<<<<< HEAD
             match(:_int, :_main, '(', ')', :block) { |_, _, _, _, a| a }
-=======
-            match('int', 'main', '(', ')', :block) { |_, _, _, _, a| a }
-            match(:class, :main ) {|a, b| MainNode.new(a, b)}
->>>>>>> 3bc8f3e (reworked how classes work based on feedback)
             match(:function, :main) {|a, b| MainNode.new(a, b)}
           end
 
@@ -126,7 +121,7 @@ class DnD
           # car Volvo;
           # car Volvo = new Car(12,3,3,3,3,45,1241);
           rule :classinit do 
-            match('new', :classIdentifier) {|_, a| } #parameters and class initalisation
+            match('new', :classIdentifier) {|_, a| ClassInitNode.new a, ""} #parameters and class initalisation
           end
 
           rule :classIdentifier do
@@ -324,13 +319,17 @@ class DnD
       if done(str) then
         puts "Bye."
       else
-        puts "=> #{@dndParser.parse(str).evaluate}"
+        puts "=> #{@dndParser.parse(str)}"
         parse
       end
     end
 
     def testParse str
-      @dndParser.parse(str).evaluate
+      res = @dndParser.parse(str)
+      if res == nil
+        raise "error, #{res} is nil"
+      end
+      puts res.evaluate
     end
 
     def log(state = true)

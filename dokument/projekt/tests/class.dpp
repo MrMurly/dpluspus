@@ -1,12 +1,12 @@
 class Car {
+    int x;
+
     int foo(int one) {
-        one = one * 2;
-        print(one);
+        print(1); 
     };
 
 }
 
 int main() {
     Car volvo = new Car;
-    print(0);
 }

@@ -10,9 +10,6 @@ class ClassBlockFuncNode < ClassBlockNode
     end
 
     def evaluate
-        if @parameters.is_a? Node
-            @parameters = @parameters.evaluate
-        end
         this = {@identifier => {
             :type => "method",
             :return => {:type => @returnType, :val => nil},
