@@ -30,13 +30,12 @@ class Node
     end
   
     def mStackFrame name, val, frame
-      puts @@stackframe
       if frame.key? name
         if val[:type] == frame[name][:type]
           frame[name][:value] = val[:value]
           return
         else
-          raise "types do not match!"
+          raise "types of #{name} with type #{frame[name][:type]} and #{val[:type]}"
         end
       elsif frame.key? :prev
         mStackFrame name, val, frame[:prev]
