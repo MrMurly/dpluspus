@@ -11,15 +11,7 @@ class BlockNode < Node
       @statements = @statements.evaluate
     end
     pushStackFrame
-    
-    for i in 0..@statements.length-1
-      curr = @statements[i]
-      if curr.is_a? ReturnNode
-        curr.evaluate
-      end
-      curr.evaluate
-    end
- 
+    @statements.each {|s| s.evaluate}
     popStackFrame
   end
 end

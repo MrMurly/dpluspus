@@ -20,6 +20,6 @@ class ClassNode < Node
             @variables = {}
         end
 
-        @@stackframe[@name] = {:methods => @methods, :members => @variables, :type => "class"}
+        @@stackframe[@name] = {:methods => @methods, :members => @variables, :type =>  @name}
     end
 end
