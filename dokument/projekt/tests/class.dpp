@@ -7,6 +7,9 @@ class Car {
 
 }
 
+
 int main() {
     Car volvo = new Car;
+    volvo.x = 1;
+    print(volvo.x);
 }

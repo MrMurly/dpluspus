@@ -128,6 +128,10 @@ class DnD
             match(ClassIdentity) {|a| a.name }
           end
 
+          rule :classmethod do 
+            match(:identifier, '.', :identifier, '(', ')') { "hello"}
+          end 
+
           #END
 
           #FUNCTIONS
@@ -245,12 +249,13 @@ class DnD
           end
           
           rule :var do
+            match(:classvar)
             match(:float)
             match(:int)
             match(:char)
             match(:varget)
           end
-
+          
           rule :float do
             match(Integer, ".", Integer)  { |a, _, b| ValueNode.new((a.to_s + "." + b.to_s).to_f, "float") }
           end
@@ -268,10 +273,12 @@ class DnD
           end
 
           rule :varget do 
-            match(:identifier) {|a| VariableNode.new a}
+            match(:identifier, '.', :identifier) { |a, _, b| ClassVarNode.new a, b}
+            # match(:identifier) {|a| VariableNode.new a}
           end
 
           rule :varset do
+            match(:identifier, '.', :identifier, '=', :varset2) { |a, _, b, _, c| ClassVarAssignmentNode.new a, b, c}
             match(:identifier, '=', :varset2) {|a, _, b| VariableAssignmentNode.new a, b}
             match(:primitive, :identifier, '=', :varset2) {|a, b, _, c| VariableSetNode.new b, a, c} 
           end
