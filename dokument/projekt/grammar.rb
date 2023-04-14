@@ -75,6 +75,7 @@ class DnD
             match(:call)
             match(:list)
             match(:findelement)
+            match(:string)
             match(:varset)
             match(:if)
             match(:boolean)
@@ -156,6 +157,8 @@ class DnD
           #END
 
           #COMPLEX DATA TYPES
+
+          #list
           rule :list do
             match(:primitive, "[", "]", :identifier, "=" ,"[", :members, "]") {|a, _, _, b, _, _, c, _| ListNode.new(a, b, c)}
             match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)}
@@ -174,6 +177,20 @@ class DnD
 
           rule :findelement do
             match(:identifier, "[", :int, "]") {|a, _, b, _| FindElementNode.new(a, b)}
+          end
+
+          #string
+          rule :string do
+            match("\"", :characters, "\"") {|_, a, _| StringNode.new(a)}
+          end
+
+          rule :characters do
+            match(:characters, :character) {|a, b| CharacterNode.new(a, b)}
+            match(:character) {|a| CharacterNode.new(a, nil)}
+          end
+
+          rule :character do
+            match(:var) {|a| [a]}
           end
 
           #END
