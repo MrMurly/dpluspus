@@ -17,8 +17,8 @@ class SymbolNode < Node
         {:value => eval("#{lhs[:value]} #{@symbol} #{rhs[:value]}"),
         :type => lhs[:type] }
 
-      rescue Exception => e #user defined exception
-        puts e.message
+      # rescue Exception => e #user defined exception
+      #   puts e.message
 
       end
     end

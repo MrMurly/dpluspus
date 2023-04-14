@@ -1,13 +1,6 @@
 
-int fac(int val, int var) {
-    if (val > 0) {
-        var = var * val;
-        fac(val-1, var);
-    };
-}
-
 int main() {
-    int a = 1;
-    fac(3, a);
-    print(a);
+    
+    int a = 0;
+    
 }

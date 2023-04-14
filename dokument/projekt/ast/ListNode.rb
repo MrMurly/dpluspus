@@ -29,6 +29,7 @@ class ListNode < Node
                 :type => @listType,
                 :list => @members
             }
+            #print searchStackFrame(@name)
         end
     end
 end
