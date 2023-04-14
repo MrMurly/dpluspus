@@ -78,7 +78,7 @@ class DnD
 
           rule :statements do
             match(:statement, ';', :statements) {|a, _, b| StatementNode.new(a, b)}
-            match(:statement, ';') {|a, _| [a]}
+            match(:statement, ';') {|a, _| a}
           end
 
           rule :statement do
