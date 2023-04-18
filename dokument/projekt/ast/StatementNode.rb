@@ -7,9 +7,9 @@ class StatementNode < Node
     end
   
     def evaluate 
-    @statement.evaluate
-    if @nextStatement
-      return @nextStatement.evaluate
-    end
+      @statement.evaluate
+      if @nextStatement
+        return @nextStatement.evaluate
+      end
     end
 end
