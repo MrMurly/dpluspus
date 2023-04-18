@@ -1,7 +1,6 @@
 
 int main() {
     
-    print(test[2]);
     int[] test = [1, 2];
     print(test[2]);
 
