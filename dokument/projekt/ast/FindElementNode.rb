@@ -16,7 +16,7 @@ class FindElementNode < Node
         end
         element = list[@index - 1]
 
-        puts element
+        #puts element
         element
     end
 end
