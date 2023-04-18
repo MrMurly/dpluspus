@@ -7,6 +7,6 @@ class ClassVarNode < Node
     end
   
     def evaluate
-      searchStackFrame(@classname)[:members][@varname]
+      searchStackFrame(@classname)[:value][:members][@varname]
     end
 end

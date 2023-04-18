@@ -19,7 +19,7 @@ class ClassVarAssignmentNode < Node
       def mStackFrame cname, vname, val, frame
         if frame.key? cname
           #TODO: error handling   
-          frame[cname][:members][:vname][:value] = val[:value]
+          frame[cname][:value][:members][vname][:value] = val[:value]
             
         elsif frame.key? :prev
           mStackFrame cname, vname, val, frame[:prev]
