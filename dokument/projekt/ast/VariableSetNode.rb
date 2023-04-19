@@ -9,13 +9,12 @@ class VariableSetNode < Node
   
     def evaluate
       expression = @expression.evaluate
+
       if @type != expression[:type]
         raise "type #{@type} and #{expression[:type]}"
         return
       end
-      if expression.key? :value
-        expression = expression[:value]
-      end
-      @@stackframe[@name] = {:value => expression, :type => @type}
+
+      @@stackframe[@name] = {:value => expression[:value], :type => @type}
     end
 end
