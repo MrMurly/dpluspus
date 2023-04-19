@@ -1,6 +1,6 @@
 require './ast/Node'
 
-class ReturnNode < Node
+class ReturnNode 
     def initialize val
         @val = val
     end
