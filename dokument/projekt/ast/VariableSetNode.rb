@@ -9,6 +9,7 @@ class VariableSetNode < Node
   
     def evaluate
       begin
+        #puts @expression.evaluate
         expression = @expression.evaluate
 
         if @type != expression[:type]

@@ -38,7 +38,7 @@ class DnD
           token(/new/) { |m| :_new}
 
           token(/if/) { |m| :_if}
-            token(/else/) { |m| :_else}
+          token(/else/) { |m| :_else}
           token(/True/) { |m| :_true}
           token(/False/) { |m| :_false}
           token(/for/) { |m| :_for}
@@ -75,7 +75,6 @@ class DnD
             match(:call)
             match(:list)
             match(:findelement)
-            match(:string)
             match(:varset)
             match(:if)
             match(:boolean)
@@ -179,20 +178,10 @@ class DnD
             match(:identifier, "[", :int, "]") {|a, _, b, _| FindElementNode.new(a, b)}
           end
 
-          #string
+          #"COMPLEX" data type string
           rule :string do
-            match("\"", :characters, "\"") {|_, a, _| StringNode.new(a)}
+            match("\"", /.*/, "\"") {|_, a, _| ValueNode.new(a, "string")}
           end
-
-          rule :characters do
-            match(:characters, :character) {|a, b| CharacterNode.new(a, b)}
-            match(:character) {|a| CharacterNode.new(a, nil)}
-          end
-
-          rule :character do
-            match(:var) {|a| [a]}
-          end
-
           #END
 
           #IF-STATEMENTS
@@ -254,6 +243,7 @@ class DnD
             match(:float)
             match(:int)
             match(:char)
+            match(:string)
             match(:varget)
           end
 
