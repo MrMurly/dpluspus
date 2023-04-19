@@ -15,6 +15,9 @@ class TestMain < Test::Unit::TestCase
             parser.testParse(file.read)
             file.close
         }
+        # file = File.open("./tests/list.dpp")
+        # parser.testParse(file.read)
+        # file.close
     end
 
 end
