@@ -31,42 +31,32 @@ class DnD
           # @variables = {}
 
           token(/\s+/)
-          #token(/\d+/) {|m| m.to_i }
-          token(/main/) { |m| m}
-          token(/print/) {|m| m}
-          token(/class/) { |m| m}
-          token(/new/) { |m| m}
+          #token(/[\(\)\[\]\{\}]/) { |m| m}
+          token(/main/) { |m| :_main}
+          token(/print/) {|m| :_print}
+          token(/class/) { |m| :_class}
+          token(/new/) { |m| :_new}
 
-          token(/if/) { |m| m}
-          token(/else/) { |m| m}
-          token(/True/) { |m| m}
-          token(/False/) { |m| m}
-          token(/for/) { |m| m}
-          token(/while/) { |m| m}
+          token(/if/) { |m| :_if}
+            token(/else/) { |m| :_else}
+          token(/True/) { |m| :_true}
+          token(/False/) { |m| :_false}
+          token(/for/) { |m| :_for}
+          token(/while/) { |m| :_while}
 
-
-          token(/char/) {|m| m}
-          token(/int/) {|m| m}
-          token(/float/) {|m| m}
-          token(/bool/) {|m| m}
-          token(/string/) {|m| m}
-          token(/void/) {|m| m}
+          token(/char/) {|m| :_char}
+          token(/int/) {|m| :_int}
+          token(/float/) {|m| :_float}
+          token(/bool/) {|m| :_bool}
+          token(/string/) {|m| :_string}
+          token(/void/) {|m| :_void}
           
-          
-          token(/\|\|/) {|m| m}
-          token(/&&/) {|m| m}
-          token(/=/) {|m| m}
-          token(/!=/) {|m| m}
-          token(/>/) {|m| m}
-          token(/</) {|m| m}
-          token(/\'.\'/) {|m| Char.new m}
-          token(/[A-Z]\w*/) {|m| ClassIdentity.new m}
-          token(/[a-z]\w*/) {|m| Variable.new m}
           token(/\d+/) {|m| m.to_i}
-          token(/./) {|m| m }
+          token(/\W/) {|m| m}
+          token(/\w+/) {|m| m} 
 
           start :main do
-            match('int', 'main', '(', ')', :block) { |_, _, _, _, a| a }
+            match(:_int, :_main, '(', ')', :block) { |_, _, _, _, a| a }
             match(:function, :main) {|a, b| MainNode.new(a, b)}
           end
 
@@ -101,8 +91,8 @@ class DnD
           # end    
           
           rule :print do 
-            match('print', '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
-            match('print', '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
+            match(:_print, '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
+            match(:_print, '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
           end
           #END
 
@@ -157,11 +147,11 @@ class DnD
 
           #LOOPS
           rule :while do
-            match("while", "(", :boolean, ")", :block) {|_, _, a, _, b| LoopNode.new(nil, nil, a, b)}
+            match(:_while, "(", :boolean, ")", :block) {|_, _, a, _, b| LoopNode.new(nil, nil, a, b)}
           end
           
           rule :for do
-            match("for", "(", :varset, ";",  :varset, ";", :boolean,")", :block) {|_,_, a, _, b, _, c, _, d| LoopNode.new(a, b, c, d)}
+            match(:_for, "(", :varset, ";",  :varset, ";", :boolean,")", :block) {|_,_, a, _, b, _, c, _, d| LoopNode.new(a, b, c, d)}
           end
           #END
 
@@ -190,20 +180,20 @@ class DnD
 
           #IF-STATEMENTS
           rule :if do 
-            match('if', '(', :boolean, ')', :block, :else) {|_,_, a, _, b, c| IfElseNode.new(a, b, c)}
-            match('if', '(', :boolean, ')', :block) {|_,_, a, _, b| IfNode.new(a, b)}
+            match(:_if, '(', :boolean, ')', :block, :else) {|_,_, a, _, b, c| IfElseNode.new(a, b, c)}
+            match(:_if, '(', :boolean, ')', :block) {|_,_, a, _, b| IfNode.new(a, b)}
           end
 
           rule :else do
-            match('else', 'if', '(', :boolean, ')', :block, :else) {|_, _, _, a, _, b, c| IfElseNode.new(a, b, c)}
-            match('else', 'if', '(', :boolean, ')', :block) {|_, _, _, a, _, b| IfNode.new(a, b)}
-            match('else', :block) {|_, a| a}
+            match(:_else, 'if', '(', :boolean, ')', :block, :else) {|_, _, _, a, _, b, c| IfElseNode.new(a, b, c)}
+            match(:_else, 'if', '(', :boolean, ')', :block) {|_, _, _, a, _, b| IfNode.new(a, b)}
+            match(:_else, :block) {|_, a| a}
           end
           #END
 
           #LOGIC/ARITEMIK
           rule :boolean do
-              match(:boolean, "||", :and) {|a, _, b| LogicNode.new a, "or", b}
+              match(:boolean, "|", "|", :and) {|a, _, b| LogicNode.new a, "or", b}
               match(:and)
           end
           
@@ -259,11 +249,11 @@ class DnD
           end
 
           rule :char do
-            match(Char) {|a| ValueNode.new a.value, "char"} 
+            match("'", /./, "'") {|_, a, _| ValueNode.new a, "char"} 
           end
 
           rule :identifier do
-            match(Variable) {|a| a.name }
+            match(/\A[a-z]\w*/) {|a| a }
           end
 
           rule :varget do 
@@ -282,17 +272,17 @@ class DnD
 
 
           rule :primitive do
-            match('char')
-            match('int')
-            match('float')
-            match('bool')
-            match('string')
-            match('void')
-            match(ClassIdentity) { |a| a.name }
+            match(:_char) { "char" }
+            match(:_int) { "int" }
+            match(:_float) { "float" }
+            match(:_bool) { "bool" }
+            match(:_string) { "string" }
+            match(:_void) { "void" }
+            match(/\A[A-Z]\w*/) { |a| a }
           end
           
           rule :name do
-            match(/[a-zA-Z]\w*/)
+            match(/\A[a-zA-Z]\w*/)
           end
           #END
 
