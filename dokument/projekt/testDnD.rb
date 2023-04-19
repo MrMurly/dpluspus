@@ -10,14 +10,14 @@ class TestMain < Test::Unit::TestCase
         parser = DnD.new
         parser.log false
 
-        # Dir["./tests/*.dpp"].each { |f| 
-        #     file = File.open(f) 
-        #     parser.testParse(file.read)
-        #     file.close
-        # }
-        file = File.open("./tests/list.dpp")
-        parser.testParse(file.read)
-        file.close
+        Dir["./tests/*.dpp"].each { |f| 
+            file = File.open(f) 
+            parser.testParse(file.read)
+            file.close
+        }
+        # file = File.open("./tests/list.dpp")
+        # parser.testParse(file.read)
+        # file.close
     end
 
 end

@@ -103,7 +103,7 @@ class DnD
           
           rule :print do 
             match('print', '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
-            match('print', '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
+            #match('print', '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
           end
           #END
 
@@ -284,6 +284,7 @@ class DnD
           end
 
           rule :varget do 
+            match(:findelement)
             match(:identifier) {|a| VariableNode.new a}
           end
 
