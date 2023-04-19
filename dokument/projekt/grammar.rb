@@ -38,7 +38,7 @@ class DnD
           token(/new/) { |m| :_new}
 
           token(/if/) { |m| :_if}
-            token(/else/) { |m| :_else}
+          token(/else/) { |m| :_else}
           token(/True/) { |m| :_true}
           token(/False/) { |m| :_false}
           token(/for/) { |m| :_for}
@@ -91,8 +91,8 @@ class DnD
           # end    
           
           rule :print do 
-            match(:_print, '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
-            match(:_print, '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
+            match('print', '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
+            #match('print', '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
           end
           #END
 
@@ -156,6 +156,8 @@ class DnD
           #END
 
           #COMPLEX DATA TYPES
+
+          #list
           rule :list do
             match(:primitive, "[", "]", :identifier, "=" ,"[", :members, "]") {|a, _, _, b, _, _, c, _| ListNode.new(a, b, c)}
             match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)}
@@ -176,6 +178,10 @@ class DnD
             match(:identifier, "[", :int, "]") {|a, _, b, _| FindElementNode.new(a, b)}
           end
 
+          #"COMPLEX" data type string
+          rule :string do
+            match("\"", /.*/, "\"") {|_, a, _| ValueNode.new(a, "string")}
+          end
           #END
 
           #IF-STATEMENTS
@@ -237,6 +243,7 @@ class DnD
             match(:float)
             match(:int)
             match(:char)
+            match(:string)
             match(:varget)
           end
 
@@ -257,6 +264,7 @@ class DnD
           end
 
           rule :varget do 
+            match(:findelement)
             match(:identifier) {|a| VariableNode.new a}
           end
 
