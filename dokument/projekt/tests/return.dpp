@@ -1,0 +1,15 @@
+
+int foo() {
+    int y = 12;
+    int x = 0;
+
+    x = y - 2;
+
+    return x;
+}
+
+int main() {
+
+    print(foo());
+
+}

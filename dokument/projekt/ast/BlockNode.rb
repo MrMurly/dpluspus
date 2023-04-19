@@ -5,13 +5,24 @@ class BlockNode < Node
   def initialize statements = ""
     @statements = statements
   end
+   # @statement => @statemnt => @statement .. => @statement => return;
 
   def evaluate 
     pushStackFrame
+    puts @statements.is_a? ReturnNode
+    if @statements.is_a? ReturnNode
+      puts "return statement"
+      result = @statements.evaluate
+      popStackFrame
+      return result
+    end
+
     if @statements.is_a? Node
-      @statements.evaluate
+      puts "vanligt statement"
+      result = @statements.evaluate
     end
       # @statements.each {|s| s.evaluate}
     popStackFrame
+    return result
   end
 end

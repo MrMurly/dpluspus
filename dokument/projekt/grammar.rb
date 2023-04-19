@@ -36,6 +36,7 @@ class DnD
           token(/print/) {|m| :_print}
           token(/class/) { |m| :_class}
           token(/new/) { |m| :_new}
+          token(/return/) { |m| :_return}
 
           token(/if/) { |m| :_if}
           token(/else/) { |m| :_else}
@@ -83,7 +84,7 @@ class DnD
             match(:boolean)
             match(:for)
             match(:while)
-            # match(:return)
+            match(:return)
             match(:print)
             
           end
@@ -97,7 +98,14 @@ class DnD
             match(:_print, '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
             #match('print', '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
           end
+
+
+          rule :return do
+            match(:_return, :boolean) {|_, a| ReturnNode.new(a)}
+          end
           #END
+
+
 
 
           #CLASSES
@@ -264,7 +272,7 @@ class DnD
           end
           
           rule :var do
-            match(:classvar)
+            match(:call)
             match(:float)
             match(:int)
             match(:char)

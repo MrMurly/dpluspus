@@ -18,9 +18,10 @@ class FuncCallNode < Node
             parameterSetup
         end
 
-        searchStackFrame(@funcname)[:block].evaluate
+        result = searchStackFrame(@funcname)[:block].evaluate
         # @@stackframe[@funcname][:block].evaluate()
         popStackFrame
+        return result
     end
 
 
