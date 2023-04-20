@@ -19,6 +19,7 @@ class FuncCallNode < Node
         end
 
         result = searchStackFrame(@funcname)[:block].evaluate
+        #puts "AAAAAAAAAAAAA#{result}"
         # @@stackframe[@funcname][:block].evaluate()
         popStackFrame
         return result
