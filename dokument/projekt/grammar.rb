@@ -58,6 +58,8 @@ class DnD
           start :main do
             match(:_int, :_main, '(', ')', :block) { |_, _, _, _, a| a }
             match(:function, :main) {|a, b| MainNode.new(a, b)}
+            match(:class, :main) {|a, b| MainNode.new(a, b)}
+          
           end
 
           #BLOCK
@@ -91,7 +93,7 @@ class DnD
           # end    
           
           rule :print do 
-            match('print', '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
+            match(:_print, '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
             #match('print', '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
           end
           #END
@@ -100,10 +102,10 @@ class DnD
           #CLASSES
           
           rule :class do 
-            match('class', :classIdentifier, '{', :classvarblock, :classfuncblock, '}') { |_, a, _, b, c, _| ClassNode.new(a, b, c)}
-            match('class', :classIdentifier, '{', :classfuncblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
-            match('class', :classIdentifier, '{', :classvarblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
-            match('class', :classIdentifier, '{' '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match(:_class, :classIdentifier, '{', :classvarblock, :classfuncblock, '}') { |_, a, _, b, c, _| ClassNode.new(a, b, c)}
+            match(:_class, :classIdentifier, '{', :classfuncblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match(:_class, :classIdentifier, '{', :classvarblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match(:_class, :classIdentifier, '{' '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
           
           end
 
@@ -121,11 +123,11 @@ class DnD
           # car Volvo;
           # car Volvo = new Car(12,3,3,3,3,45,1241);
           rule :classinit do 
-            match('new', :classIdentifier) {|_, a| ClassInitNode.new a, ""} #parameters and class initalisation
+            match(:_new, :classIdentifier) {|_, a| ClassInitNode.new a, ""} #parameters and class initalisation
           end
 
           rule :classIdentifier do
-            match(ClassIdentity) {|a| a.name }
+            match(/\A[A-Z]\w*/) {|a| a }
           end
 
           rule :classmethod do 
