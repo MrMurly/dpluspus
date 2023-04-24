@@ -11,8 +11,8 @@ class ParamNode < Node
    # [{...}]
 
     def evaluate
-        if @childs.is_a? ParamNode 
-            @param += @childs.evaluate
+        if @childs.is_a? Array
+            @param += @childs
         end
         @param
     end

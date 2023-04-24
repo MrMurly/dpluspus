@@ -1,6 +1,6 @@
-require './ast/Node'
+require './ast/ClassBlockNode'
 
-class ClassBlockVarNode < Node
+class ClassBlockVarNode < ClassBlockNode
     def initialize primitive, name, block
         @primitive = primitive
         @name = name
@@ -8,11 +8,13 @@ class ClassBlockVarNode < Node
     end
 
     def evaluate
-        # do something with this....
+        
+       this = {@name => {
+        :type => @primitive,
+        :value => nil
+       } }
 
-        if @block
-            @block.evaluate
-        end
 
+       return combine(this, @name, @block)
     end
 end

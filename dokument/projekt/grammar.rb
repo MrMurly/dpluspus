@@ -58,6 +58,8 @@ class DnD
           start :main do
             match(:_int, :_main, '(', ')', :block) { |_, _, _, _, a| a }
             match(:function, :main) {|a, b| MainNode.new(a, b)}
+            match(:class, :main) {|a, b| MainNode.new(a, b)}
+          
           end
 
           #BLOCK
@@ -72,6 +74,7 @@ class DnD
           end
 
           rule :statement do
+            match(:classmethod)
             match(:call)
             match(:list)
             match(:findelement)
@@ -91,7 +94,7 @@ class DnD
           # end    
           
           rule :print do 
-            match('print', '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
+            match(:_print, '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
             #match('print', '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
           end
           #END
@@ -99,23 +102,44 @@ class DnD
 
           #CLASSES
           
-          # rule :class do 
-          #   match('class', Variable, '{', :classblock, '}') { |_, a, _, b, _| ClassNode.new(a, b)}
-          # end
-
-          # rule :classblock do
-          #   match(:function, :classblock) {|a, b| ClassBlockFuncNode.new(a, b)}
-          #   match(:primitive, :identifier, ";", :classblock) {|a, b, _, c| ClassBlockVarNode.new(a, b, c)}
-          #   match(:function) 
-          #   match(:primitive, :identifier, ";") {|a, b, _| ClassBlockVarNode.new(a, b, nil)} 
-          # end
+          rule :class do 
+            match(:_class, :classIdentifier, '{', :classvarblock, :classfuncblock, '}') { |_, a, _, b, c, _| ClassNode.new(a, b, c)}
+            match(:_class, :classIdentifier, '{', :classfuncblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match(:_class, :classIdentifier, '{', :classvarblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match(:_class, :classIdentifier, '{' '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
           
-          # # class car { ..... }
-          # # car Volvo;
-          # # car Volvo = new Car(12,3,3,3,3,45,1241);
-          # rule :classinit do 
-          #   match('new', ClassIdentity, '(', :callparams, ')') {|_, a, _, b, _| ClassInitNode.new(a, b)} #parameters and class initalisation
-          # end
+          end
+
+          rule :classvarblock do
+            match(:primitive, :identifier, ";", :classvarblock) {|a, b, _, c| ClassBlockVarNode.new(a, b, c)}
+            match(:primitive, :identifier, ";") {|a, b, _| ClassBlockVarNode.new(a, b, nil)} 
+          end
+
+          rule :classfuncblock do
+            match(:primitive, :identifier, :_params, :block, ';', :classfuncblock) { |a, b, c, d, _, e| ClassBlockFuncNode.new(a, b, c, d, e) }
+            match(:primitive, :identifier, :_params, :block, ';') {|a, b, c, d, _| ClassBlockFuncNode.new(a, b , c, d, nil)}
+          end
+
+          rule :_params do 
+            match('(', ')') {[]}
+            match('(', :params, ')') {|_, a, _| a}
+          end
+          
+          # class car { ..... }
+          # car Volvo;
+          # car Volvo = new Car(12,3,3,3,3,45,1241);
+          rule :classinit do 
+            match(:_new, :classIdentifier) {|_, a| ClassInitNode.new a, ""} #parameters and class initalisation
+          end
+
+          rule :classIdentifier do
+            match(/\A[A-Z]\w*/) {|a| a }
+          end
+
+          rule :classmethod do 
+            match(:identifier, '.', :identifier, '(', ')') { |a, _, b| ClassMethodCallNode.new a, b, nil}
+            match(:identifier, '.', :identifier, '(', :callparams, ')') {|a, _, b, _, c| ClassMethodCallNode.new a, b, c}
+          end 
 
           #END
 
@@ -140,7 +164,7 @@ class DnD
           end
           
           rule :callparams do 
-            match(:callparams, ",", :boolean) {|a, _, b| ParamNode.new(a, b)}
+            match(:callparams, ",", :boolean) {|a, _, b| ParamNode.new(a, [b])}
             match(:boolean) {|a| [a]}
           end
           #END
@@ -240,13 +264,14 @@ class DnD
           end
           
           rule :var do
+            match(:classvar)
             match(:float)
             match(:int)
             match(:char)
             match(:string)
             match(:varget)
           end
-
+          
           rule :float do
             match(Integer, ".", Integer)  { |a, _, b| ValueNode.new((a.to_s + "." + b.to_s).to_f, "float") }
           end
@@ -265,15 +290,18 @@ class DnD
 
           rule :varget do 
             match(:findelement)
+            match(:identifier, '.', :identifier) { |a, _, b| ClassVarNode.new a, b}
             match(:identifier) {|a| VariableNode.new a}
           end
 
           rule :varset do
+            match(:identifier, '.', :identifier, '=', :varset2) { |a, _, b, _, c| ClassVarAssignmentNode.new a, b, c}
             match(:identifier, '=', :varset2) {|a, _, b| VariableAssignmentNode.new a, b}
             match(:primitive, :identifier, '=', :varset2) {|a, b, _, c| VariableSetNode.new b, a, c} 
           end
 
           rule :varset2 do
+            match(:classinit)
             match(:boolean)
           end
 
@@ -307,13 +335,17 @@ class DnD
       if done(str) then
         puts "Bye."
       else
-        puts "=> #{@dndParser.parse(str).evaluate}"
+        puts "=> #{@dndParser.parse(str)}"
         parse
       end
     end
 
     def testParse str
-      @dndParser.parse(str).evaluate
+      res = @dndParser.parse(str)
+      if res == nil
+        raise "error, #{res} is nil"
+      end
+      puts res.evaluate
     end
 
     def log(state = true)
@@ -325,4 +357,4 @@ class DnD
     end
 end
 
-DnD.new.parse
+# DnD.new.parse

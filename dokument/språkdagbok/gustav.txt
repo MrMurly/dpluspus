@@ -8,3 +8,75 @@ labb partner verkar lite mera ovann. Men det ska inte vara några problem.
 Något som vi fastnade på var ett namn för primitiver deklararade i scopet,
 typ som "Hej" eller 0 eller [1,2,3], alltså inte variabeler utan vad som
 finns i dessa beshållare. 
+
+Vecka 9.
+Nu har vi arbetat med att fastställa språkspecefikationen, med vissa 
+specefika konstruktioner. Det har gått smidigt och Latex funkar bra för
+att göra detta extra synligt. Men pga begränsad tid kommer vi inte riktigt 
+vara helt klara med språkspecefikationen förrens sista handledningen.
+
+Vecka 10. 
+Inte mycket har hänt denna vecka utöver att implementerings plan har fixats
+och lite i språkspecefikationen har blivit expanderad. 
+
+Vecka 13.
+Denna vecka hade jag glömt att skriva dagboken löpande, därmed kom denna.
+Nu har vi arbetet med att implemenetera logik, aritmetik och scope 
+hantering. allting flöt på bra iom att jag har relativt bra förståelse
+för hur man gör AST. 
+
+2022-04-04
+Nu finns funktioner! allting börjar falla på plats utan större dilemman 
+på hur saker ska implemeteras. 
+
+2022-04-05
+Idag har vi implemeneterat loopar, både for och while. allting flytter på bra
+men jag åker iväg över helgen, så Lucas kommer implemenetera arrayer på
+egenhand.
+
+2022-04-10
+Idag har vi arbetat med att försöka implemenetera klasser, men detta 
+strular en hel del iom att vi inte riktigt förstår hur det ska implemeneteras
+så vi har schema lagt handledningen med pontus på onsdag. 
+
+2022-04-11
+Idag försökte vi ta oss vidare medans vi väntar på handledningen med att
+ta oss vidare med recursion men har kört fast. taggit lite för mycket på
+samma gång. 
+Vi gjorde en ändring med våran test suite, nu kör den alla filer i /tests 
+och bara ser om de går att köra. 
+Det har varit lite problem meed att komma ihåg hur man concatenerar två 
+containers, både arrayer och hashar. Men efter en snabb sökning döck båda 
+upp.
+
+2022-04-12
+Idag har vi pratat med pontus och kommit vidare med class initialisering.
+förstor nu mer hur vi ska göra konceptuellt. 
+
+
+Inlämning 1 reflektion:
+Arbetet rullar på bra i hörhållande till implemeneterings planen fram tills
+denna vecka. Denna vecka när vi skulle implemenetera klasser har vi fått 
+större förhinder och är tvugna att flytta fram skapandet av arv och 
+polymorfi till nästa vecka. De första två veckorna rullade på förvånadsvärt
+bra trotts att vi inte hade super mycket tid på att arbeta på projektet. 
+För att ro projektet i hamn kommer vi behöva ändra på lite saker, framför
+allt behöver vi lägga på lite extra arbete på egenhand för att få de sista
+featuresen av språket att fungera nämligen prototype polymorfi, recursion och
+retur satser. Dessa fungerar inte i den nuvarande och vi försöker dela upp
+arbetet så att det ska gå lite snabbare. Just nu arbetar jag med klasser, och 
+Lucas gör klart List implemeneteringen, huvudsakligen gör han klart hur man hämtar
+och ändrar värdet i listan. 
+
+Det jag hoppas på att vi hinner klart med är sen själva utritandet av dungeonen, att 
+med hjälpa av det abstrakta syntax trädet skapa någon form av utskrivnad i 
+terminalen. Det finns redan en evaluate metod så det borde inte vara så svårt att skapa
+en seperat funktion "print" som skapar någon form av sträng eller värden och skickar vidare
+dessa upp till en form av funktion, som tar dessa värden och skapar en "dungeon" av det.
+Detta ser just nu fortfarande görbart ut men vill fokusera på att få klart det "fundamentala" med 
+språket först innan vi försöker på med något mer. 
+
+I övrigt har sammarbetet känns bra än så länge, vi har par programmerat en hel del, med
+lite bitar arbetat på egen hand. Mitt schema har kanske varit lite rörigt att arbeta runt men
+utöver det har det gått väldigt bra. Vi har arbetat på distans hela tiden vilket också har varit 
+väldigt skönt för då har det varit väldigt enkelt att schema lägga tider vi båda kan arbeta på.
