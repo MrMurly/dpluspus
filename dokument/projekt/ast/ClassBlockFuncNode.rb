@@ -1,7 +1,7 @@
 require './ast/ClassBlockNode'
 
 class ClassBlockFuncNode < ClassBlockNode
-    def initialize primitive, identifier, parameters, block, nextfunc
+    def initialize primitive, identifier, parameters=[], block, nextfunc
         @primitive = primitive
         @identifier = identifier
         @parameters = parameters
@@ -10,6 +10,11 @@ class ClassBlockFuncNode < ClassBlockNode
     end
 
     def evaluate
+        if @parameters.is_a? Node
+            @parameters = @parameters.evaluate
+        end
+
+
         this = {@identifier => {
             :type => "method",
             :return => {:type => @returnType, :val => nil},

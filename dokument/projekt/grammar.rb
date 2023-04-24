@@ -74,6 +74,7 @@ class DnD
           end
 
           rule :statement do
+            match(:classmethod)
             match(:call)
             match(:list)
             match(:findelement)
@@ -115,8 +116,13 @@ class DnD
           end
 
           rule :classfuncblock do
-            match(:primitive, :identifier, '(', :params, ')', :block, ';', :classfuncblock) { |a, b, _, c, _, d, _, e| ClassBlockFuncNode.new(a, b, c, d, e) }
-            match(:primitive, :identifier, '(', :params, ')', :block, ';') {|a, b, _, c, _, d, _| ClassBlockFuncNode.new(a, b , c, d, nil)}
+            match(:primitive, :identifier, :_params, :block, ';', :classfuncblock) { |a, b, c, d, _, e| ClassBlockFuncNode.new(a, b, c, d, e) }
+            match(:primitive, :identifier, :_params, :block, ';') {|a, b, c, d, _| ClassBlockFuncNode.new(a, b , c, d, nil)}
+          end
+
+          rule :_params do 
+            match('(', ')') {[]}
+            match('(', :params, ')') {|_, a, _| a}
           end
           
           # class car { ..... }
@@ -131,7 +137,8 @@ class DnD
           end
 
           rule :classmethod do 
-            match(:identifier, '.', :identifier, '(', ')') { "hello"}
+            match(:identifier, '.', :identifier, '(', ')') { |a, _, b| ClassMethodCallNode.new a, b, nil}
+            match(:identifier, '.', :identifier, '(', :callparams, ')') {|a, _, b, _, c| ClassMethodCallNode.new a, b, c}
           end 
 
           #END
@@ -157,7 +164,7 @@ class DnD
           end
           
           rule :callparams do 
-            match(:callparams, ",", :boolean) {|a, _, b| ParamNode.new(a, b)}
+            match(:callparams, ",", :boolean) {|a, _, b| ParamNode.new(a, [b])}
             match(:boolean) {|a| [a]}
           end
           #END
@@ -284,7 +291,7 @@ class DnD
           rule :varget do 
             match(:findelement)
             match(:identifier, '.', :identifier) { |a, _, b| ClassVarNode.new a, b}
-            # match(:identifier) {|a| VariableNode.new a}
+            match(:identifier) {|a| VariableNode.new a}
           end
 
           rule :varset do

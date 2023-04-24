@@ -8,8 +8,10 @@ class BlockNode < Node
 
   def evaluate 
     pushStackFrame
-    @statements.evaluate
-    # @statements.each {|s| s.evaluate}
+    if @statements.is_a? Node
+      @statements.evaluate
+    end
+      # @statements.each {|s| s.evaluate}
     popStackFrame
   end
 end
