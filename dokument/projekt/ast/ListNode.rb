@@ -10,9 +10,12 @@ class ListNode < Node
 
     def evaluate
         begin
+            p @members
             if @members
 
+                
                 @members = @members.evaluate
+
 
                 @members.map!(&:evaluate)
 

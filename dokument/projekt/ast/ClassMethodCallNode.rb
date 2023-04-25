@@ -1,4 +1,5 @@
 require './ast/FuncCallNode'
+require './Return'
 
 class ClassMethodCallNode < Node 
     def initialize varname, methodname, parameters=[]
@@ -14,11 +15,16 @@ class ClassMethodCallNode < Node
         if @parameters
             parameterSetup
         end
-        @@stackframe["this"] = searchStackFrame(@varname)
+        @@stackframe["this"] = @varname
         if @head[:block].is_a? Node
-            @head[:block].evaluate
+            begin
+                @head[:block].evaluate
+            rescue Return => e
+                result = e.val
+            end
         end
         popStackFrame
+        return result
     end
 
 

@@ -1,9 +1,17 @@
 class Car {
     int x;
 
+    int fib(int val) {
+        if (val == 1) {
+            return 1;
+        };
+        return val * this.fib(val - 1);
+    };
+
     int foo(int one) {
         print(this.x); 
         print( one );
+        this.x = one;
     };
     int bar(int zero, int two) {
         print(zero % two);
@@ -19,4 +27,6 @@ int main() {
     volvo.foo(3);
     volvo.bar(5, 2);
     volvo.foobar();
+    print(volvo.x);
+    print(volvo.fib(5));
 }

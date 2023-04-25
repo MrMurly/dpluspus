@@ -75,8 +75,6 @@ class DnD
           end
 
           rule :statement do
-            match(:classmethod)
-            match(:call)
             match(:list)
             match(:findelement)
             match(:varset)
@@ -191,11 +189,14 @@ class DnD
 
           #list
           rule :list do
-            match(:primitive, "[", "]", :identifier, "=" ,"[", :members, "]") {|a, _, _, b, _, _, c, _| ListNode.new(a, b, c)}
+            match(:primitive, "[", "]", :identifier, "=" , :primlist) {|a, _, _, b, _, _, c, _| ListNode.new(a, b, c)}
             match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)}
             match(:primitive, "[", "]", :identifier) {|a, _, _, b| ListNode.new(a, b, nil)}
           end
 
+          rule :primlist do 
+            match("[", :members, "]") { |_, a, _| a}
+          end
 
           rule :members do
             match(:members, ",", :member) {|a, _, b| MemberNode.new(a, b)}
@@ -272,11 +273,13 @@ class DnD
           end
           
           rule :var do
+            match(:classmethod)
             match(:call)
             match(:float)
             match(:int)
             match(:char)
             match(:string)
+            match(:primlist)
             match(:varget)
           end
           

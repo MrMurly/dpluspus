@@ -1,0 +1,17 @@
+class stack {
+    int[] arr;
+
+    int at(int pos) {
+        return this.arr[pos];
+    }
+
+    void push(int val) {
+        this.arr = [val] + this.arr;
+    }
+
+    int pop() {
+        int res = this.arr[0];
+        this.arr = this.arr - [res];
+        return res;
+    }
+}

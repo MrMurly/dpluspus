@@ -10,7 +10,8 @@ class FindElementNode < Node
         @index = @index.evaluate[:value]
         list = searchStackFrame(@listName)[:list]
         begin
-            if @index <= 0 || @index > list.length
+            p list
+            if @index < 0 || @index > list.length
                 raise "index: #{@index} out of bounds of list length"
             end
         end
