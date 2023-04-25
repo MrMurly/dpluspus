@@ -199,8 +199,8 @@ class DnD
           end
 
           rule :else do
-            match(:_else, 'if', '(', :boolean, ')', :block, :else) {|_, _, _, a, _, b, c| IfElseNode.new(a, b, c)}
-            match(:_else, 'if', '(', :boolean, ')', :block) {|_, _, _, a, _, b| IfNode.new(a, b)}
+            match(:_else, :_if, '(', :boolean, ')', :block, :else) {|_, _, _, a, _, b, c| IfElseNode.new(a, b, c)}
+            match(:_else, :_if, '(', :boolean, ')', :block) {|_, _, _, a, _, b| IfNode.new(a, b)}
             match(:_else, :block) {|_, a| a}
           end
           #END

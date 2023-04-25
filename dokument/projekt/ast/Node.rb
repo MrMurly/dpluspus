@@ -30,7 +30,6 @@ class Node
     end
   
     def mStackFrame name, val, frame
-      puts @@stackframe
       if frame.key? name
         if val[:type] == frame[name][:type]
           frame[name][:value] = val[:value]
