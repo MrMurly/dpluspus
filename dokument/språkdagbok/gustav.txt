@@ -80,3 +80,52 @@ I övrigt har sammarbetet känns bra än så länge, vi har par programmerat en 
 lite bitar arbetat på egen hand. Mitt schema har kanske varit lite rörigt att arbeta runt men
 utöver det har det gått väldigt bra. Vi har arbetat på distans hela tiden vilket också har varit 
 väldigt skönt för då har det varit väldigt enkelt att schema lägga tider vi båda kan arbeta på.
+
+
+2023-04-14
+Hade gjort en "fix" med blocknode tidigare, som verkar ha skapat mer problem, tidigare peckade den på
+nästa statement som i sin tur peckade på en statement etc. Sen ändrade jag så den skapade en array
+av dessa. men det verkar inte riktigt funkat som det ska, så vi har ändrat tillbaka till föregående. 
+
+2023-04-19
+Fixat med class initialisering och hur man gör det mesta, men lite problem sätter sig med grammatiken
+vet inte riktigt hur jag ska gå tillväga för att lösa det... Ger det nya tag imorgon för att se hur det 
+går.
+Vi har också pratat med pontus om hur vi ska göra med komplexa data typer och tillhörande medlemsfunktion
+planen är att ha ett "standard biblotek" med en väldigt dum list typ.
+vi har även gjort lite ändringar i hur våran lexer fungerar. nu skapar 
+vi tokens av alla "speciella" ord, som main, new, int etc. Detta gör så vi kan enklare skriva våra
+regex uttryck i parsern. Borde underlätta en del och styra upp lite problem som skett tidigare. 
+Gör även att strängar kan nu skrivas mer ordentligt. 
+
+2023-04-24
+Fixade det sista med klasser tror jag, nu kan man göra metod anrop. tog mycket kortare tid än vad
+jag förväntade mig att det skulle göra. Men nu fungerar det som det ska och allt verkar fungera 
+som det ska.
+
+2023-04-25
+Idag har både jag och lucas gemensamt arbetat på projektet på diverse olika saker, dels fick vi 
+retur satser att fungera via att använda oss utav exception handling och rescue. Detta är inte 
+ändamålet med exception handling, den ska egentligen användas när något går fel, men det funkar
+bra för vårat syfte och gör så vi slipper skriva en massor med spagethi kod vilket vi höll på att
+göra. Sen fixade vi lite med classer och "this", finns fortfarande en bugg med hur funktions anrop
+gör- this leder till en oändlig loop, men borde gå att ordna. 
+
+
+
+Inlämning reflektion 2:
+Nu har det gått två veckor sen sist och arbetet har inte flyttit på super bra tyvärr... Mitt 
+personliga problem har legat mycket i att jag inte har haft super mycket tid att lägga och 
+när jag har lagt mer tid har jag kört fast i att parsern inte samarbeta med mig. Men till slut
+släppte detta, men det var i måndags, och nu har vi inte super mycket tid kvar innan Inlämning
+detta innebär att vi nu inte ska implemenetera något mera utan fokusera på att få klart det
+som vi redan har påbörjat, nämligen klasser och listor. Klasser behöver ha en initialisering
+metod samt lite fix med hur "this" keywordet fungerar. Listor behöver ha något sätt att definera
+"råa" listor. Detta skulle göra att "x - [0, 1, 2]" vara möjligt, givet att x är en lista så klart.
+då skulle vi kunna lägga till en stack klass i vårat "standard biblotek" som fungerar på det önskade 
+sättet. 
+
+Vi det här läget trodde vi att vi hade hunnit klart med det mesta och skulle bara kunna fokusera på 
+rapporten nu de sista veckorna, istället blir det att göra klart dessa två sista bitarna och sen 
+köra på med språkdokumentationen, vi har redan hunnit börja på den är igång. Utöver det är det lite 
+mer att fixa rent "städning" i koden. Men det kan tas lite senare, inte jätte mycket kvar att fixa. 
