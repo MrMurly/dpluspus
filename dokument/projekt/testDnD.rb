@@ -8,14 +8,14 @@ require 'test/unit'
 class TestMain < Test::Unit::TestCase
     def testMain
         parser = DnD.new
-        parser.log true
+        parser.log false
 
         Dir["./tests/*.dpp"].each { |f| 
             file = File.open(f) 
             parser.testParse(file.read)
             file.close
         }
-        # file = File.open("./tests/list.dpp")
+        # file = File.open("./tests/return.dpp")
         # parser.testParse(file.read)
         # file.close
     end

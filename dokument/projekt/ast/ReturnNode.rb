@@ -1,11 +1,12 @@
 require './ast/Node'
+require './Return'
 
-class ReturnNode < Node
+class ReturnNode 
     def initialize val
         @val = val
     end
 
     def evaluate
-        @val.evaluate
+        raise Return.new @val.evaluate
     end
 end

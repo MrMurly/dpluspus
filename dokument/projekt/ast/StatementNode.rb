@@ -8,6 +8,8 @@ class StatementNode < Node
   
     def evaluate 
       @statement.evaluate
+      #puts "AAAAAAAAAAAAAAAA#{@nextStatement}"
+      #puts "AAAAAAAAAAAAAAAAAAAAA#{@nextStatement.evaluate}"
       if @nextStatement
         return @nextStatement.evaluate
       end

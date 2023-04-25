@@ -1,0 +1,23 @@
+
+int foo() {
+    int y = 2;
+    int x = 0;
+    x = x + y;
+    while (x < 10)
+    {
+        if (x == 5) {
+            return x;
+        };
+        x = x + 1;
+    };
+    if (x) {
+        return x;
+    };
+    
+}
+
+int main() {
+
+    print(foo());
+
+}
