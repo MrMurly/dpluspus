@@ -9,16 +9,13 @@ class BlockNode < Node
 
   def evaluate 
     pushStackFrame
-    #puts @statements.is_a? ReturnNode
     if @statements.is_a? ReturnNode
-      #puts "return statement"
       result = @statements.evaluate
       popStackFrame
       return result
     end
 
     if @statements.is_a? Node
-      puts "vanligt statement"
       result = @statements.evaluate
     end
       # @statements.each {|s| s.evaluate}
