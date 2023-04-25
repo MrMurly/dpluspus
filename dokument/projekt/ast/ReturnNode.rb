@@ -1,4 +1,5 @@
 require './ast/Node'
+require './Return'
 
 class ReturnNode 
     def initialize val
@@ -6,6 +7,6 @@ class ReturnNode
     end
 
     def evaluate
-        @val.evaluate
+        raise Return.new @val.evaluate
     end
 end

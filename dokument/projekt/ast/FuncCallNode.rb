@@ -1,5 +1,5 @@
 require './ast/Node'
-
+require './Return'
 
 
 
@@ -17,10 +17,12 @@ class FuncCallNode < Node
         if @parameters 
             parameterSetup
         end
-
-        result = searchStackFrame(@funcname)[:block].evaluate
-        #puts "AAAAAAAAAAAAA#{result}"
-        # @@stackframe[@funcname][:block].evaluate()
+        begin
+            searchStackFrame(@funcname)[:block].evaluate
+        rescue Return => e 
+            result = e.val
+        end
+            # @@stackframe[@funcname][:block].evaluate()
         popStackFrame
         return result
     end

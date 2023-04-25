@@ -16,11 +16,14 @@ class LoopNode < Node
         end
 
         while @boolean.evaluate[:value]
-            @block.evaluate
+            val = @block.evaluate
+            #puts val
             if @addition
                 @addition.evaluate
             end            
         end
+
+        return val
     end
 
 end
