@@ -27,7 +27,6 @@ class ClassVarAssignmentNode < Node
         elsif frame.key? :prev
           mStackFrame cname, vname, val, frame[:prev]
         else
-          puts @@stackframe
           raise "error; #{cname} doesn't exist!"
         end
         
