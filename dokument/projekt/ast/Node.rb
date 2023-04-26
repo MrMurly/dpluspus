@@ -1,15 +1,20 @@
 class Node 
     @@stackframe = {}
   
-    def searchStackFrame name
+    def searchStackFrame name 
       begin
         currframe = @@stackframe
         while true
           if currframe.key? name
             if name == "this"
-              return searchStackFrame currframe["this"]
-            end 
-            return currframe[name]
+              if currframe[name] == "this" 
+                currframe = currframe[:prev]
+              else
+                return searchStackFrame(currframe[name])
+              end
+            else
+              return currframe[name]
+            end
           elsif currframe.key? :prev
             currframe = currframe[:prev]
           else
