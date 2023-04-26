@@ -10,28 +10,37 @@ class ListNode < Node
 
     def evaluate
         begin
-            p @members
             if @members
 
-                
                 @members = @members.evaluate
-
 
                 @members.map!(&:evaluate)
 
-                for member in @members
-                    if member[:type] != @listType
-                        raise "List must only contain members of the type #{@listType}!"
+                if @listType
+                    for member in @members
+                        if member[:type] != @listType
+                            raise "List must only contain members of the type #{@listType}!"
+                        end
                     end
                 end
             else
                 @members = []
             end
-            
-            @@stackframe[@name] = {
-                :type => @listType,
-                :list => @members
-            }
+        
+            if @listType && @name
+                @@stackframe[@name] = {
+                    :type => @listType,
+                    :list => @members
+                }
+            else
+                @members
+                # @listType = @members[0][:type]
+
+                # @@stackframe["noNameList"] = {
+                #     :type => @listType,
+                #     :value => @members} 
+
+            end
             #print searchStackFrame(@name)
         end
     end
