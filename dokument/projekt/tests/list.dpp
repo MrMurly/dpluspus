@@ -1,9 +1,12 @@
 
 int main() {
 
-    [3, 4, 5];
+    
 
     int[] test = [1, 2];
     print(test[2]);
+
+    print([1,2,3,4] - [2]);
+    23;
     
 }

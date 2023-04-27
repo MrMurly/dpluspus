@@ -192,11 +192,11 @@ class DnD
             match(:primitive, "[", "]", :identifier, "=" , :primlist) {|a, _, _, b, _, c| ListNode.new(a, b, c)}
             match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)}
             match(:primitive, "[", "]", :identifier) {|a, _, _, b| ListNode.new(a, b, nil)}
-            match(:primlist) {|a| ListNode.new(nil, nil, a)}
+            #match(:primlist) {|a| ListNode.new(nil, nil, a)}
           end
 
           rule :primlist do 
-            match("[", :members, "]") { |_, a, _| a}
+            match("[", :members, "]") { |_, a, _| ValueListNode.new(a)}
           end
 
           rule :members do
