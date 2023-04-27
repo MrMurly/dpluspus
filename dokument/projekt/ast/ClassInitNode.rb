@@ -8,23 +8,36 @@ class ClassInitNode < Node
     end
 
     def evaluate
-        searchStackFrame(@classname)
+        @head = searchStackFrame(@classname)
+        pushStackFrame
+        if @parameters
+            parameterSetup
+        end
+        @@stackframe["this"] = "temp" 
+        @@stackframe["temp"] = {:value => @head, :type => @classname }
+        if @head[:constructor][:block].is_a? Node
+            @head[:constructor][:block].evaluate
+        end
+        @head = @@stackframe["temp"][:value]
+        popStackFrame
+        return @head
     end
 
 
     def parameterSetup
-        
-        func = searchStackFrame(@classname)
-        paramlen = func[:parameters].length
+        paramlen = @head[:constructor][:parameters].length 
+        if @parameters.is_a? Node
+            @parameters = @parameters.evaluate
+        end
+
         if paramlen != @parameters.length
-            raise "Expected #{paramlen} number of arguments, but #{@parameters.length} was given."
+            raise "Expected #{paramlen} number of arguments but got #{@parameters.length}"
         end
 
         for i in 0..paramlen-1
             pm = @parameters[i].evaluate
-            paramtype = func[:parameters][i][:type]
-
-            @@stackframe[func[:parameters][i][:name]] = pm
+            
+            @@stackframe[@head[:constructor][:parameters][i][:name]] = pm
         end
     end
 end

@@ -1,6 +1,10 @@
 class Car {
     int x;
 
+    Car(int one) {
+        this.x = one;
+    };
+
     int fib(int val) {
         if (val == 1) {
             return 1;
@@ -21,7 +25,8 @@ class Car {
 
 
 int main() {
-    Car volvo = new Car;
+    Car volvo = new Car( 20 );
+    print(volvo.x);
     volvo.x = 5;
     print(volvo.x);
     volvo.foo(3);

@@ -109,11 +109,14 @@ class DnD
           #CLASSES
           
           rule :class do 
-            match(:_class, :classIdentifier, '{', :classvarblock, :classfuncblock, '}') { |_, a, _, b, c, _| ClassNode.new(a, b, c)}
-            match(:_class, :classIdentifier, '{', :classfuncblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
-            match(:_class, :classIdentifier, '{', :classvarblock, '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match(:_class, :classIdentifier, '{', :classvarblock, :classconstructor, :classfuncblock, '}') { |_, a, _, b, c, d, _| ClassNode.new(a, b, c, d)}
+            match(:_class, :classIdentifier, '{', :classconstructor, :classfuncblock, '}') { |_, a, _, b, c, _| ClassNode.new(a, b, c)}
+            match(:_class, :classIdentifier, '{', :classconstructor, :classvarblock, '}') { |_, a, _, b, c, _| ClassNode.new(a, b, c)}
             match(:_class, :classIdentifier, '{' '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
-          
+          end
+
+          rule :classconstructor do
+            match(:classIdentifier, :_params, :block, ';') { |a, b, c| ClassConstructorNode.new(a, b, c)}
           end
 
           rule :classvarblock do
@@ -135,7 +138,7 @@ class DnD
           # car Volvo;
           # car Volvo = new Car(12,3,3,3,3,45,1241);
           rule :classinit do 
-            match(:_new, :classIdentifier) {|_, a| ClassInitNode.new a, ""} #parameters and class initalisation
+            match(:_new, :classIdentifier, :callparams) {|_, a, b| ClassInitNode.new(a, b)} #parameters and class initalisation
           end
 
           rule :classIdentifier do
@@ -266,7 +269,7 @@ class DnD
           end
 
           rule :term do
-            match("(", :boolean, ")") 
+            match("(", :boolean, ")") {|_, a, _| a}
             match('True') { |a| ValueNode.new true, "bool"}
             match('False') {|a| ValueNode.new false, "bool"}
             match(:var)
