@@ -26,10 +26,8 @@ class ListNode < Node
             end
         
             if @listType && @name
-                @@stackframe[@name] = {
-                    :type => @listType,
-                    :list => @members
-                }
+                @@stackframe[@name] = @members
+                
             else
                 @members
                 # @listType = @members[0][:type]

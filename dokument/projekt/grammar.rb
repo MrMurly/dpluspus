@@ -76,7 +76,6 @@ class DnD
 
           rule :statement do
             match(:list)
-            match(:findelement)
             match(:varset)
             match(:if)
             match(:boolean)
@@ -122,6 +121,8 @@ class DnD
           rule :classvarblock do
             match(:primitive, :identifier, ";", :classvarblock) {|a, b, _, c| ClassBlockVarNode.new(a, b, c)}
             match(:primitive, :identifier, ";") {|a, b, _| ClassBlockVarNode.new(a, b, nil)} 
+            match(:primitive, "[", "]", :identifier, ';', :classvarblock) {|a, _, _, b, _, c| ClassBlockVarNode.new(a, b, c, true)}
+            match(:primitive, "[", "]", :identifier) {|a, _, _, b| ClassBlockVarNode.new(a, b, nil, true)}
           end
 
           rule :classfuncblock do
@@ -305,6 +306,7 @@ class DnD
 
           rule :varget do 
             match(:findelement)
+            match(:identifier, '.', :identifier, '[', :var,']') { |a, _, b, _, c, _| ClassElemNode.new a, b, c}
             match(:identifier, '.', :identifier) { |a, _, b| ClassVarNode.new a, b}
             match(:identifier) {|a| VariableNode.new a}
           end
@@ -329,6 +331,7 @@ class DnD
             match(:_bool) { "bool" }
             match(:_string) { "string" }
             match(:_void) { "void" }
+            match(:primitive, '[', ']')
             match(/\A[A-Z]\w*/) { |a| a }
           end
           
