@@ -1,3 +1,4 @@
+
 require './ast/Node'
 
 class VariableAssignmentNode < Node

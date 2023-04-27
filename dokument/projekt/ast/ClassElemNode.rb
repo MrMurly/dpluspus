@@ -8,7 +8,10 @@ class ClassElemNode < Node
     end
   
     def evaluate
-        @pos = @pos.evaluate
-      searchStackFrame(@classname)[:value][:members][@varname][:value][@pos]
+        if @pos.is_a? Node
+            @pos = @pos.evaluate
+        end
+      puts "hej", searchStackFrame(@classname)[:value][:members][@varname]
+      searchStackFrame(@classname)[:value][:members][@varname][:value][@pos[:value]]
     end
 end

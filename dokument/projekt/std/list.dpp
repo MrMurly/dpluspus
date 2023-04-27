@@ -3,15 +3,20 @@ class Stack {
     int size;
 
 
-    Stack() {};
+    Stack() {
+        this.size = 0;
+        this.arr = [0];
+    };
 
     int at(int pos) {
         return this.arr[pos];
     };
 
     void push(int val) {
+        print(val);
         this.arr = [val] + this.arr;
         this.size = this.size + 1;
+        print(this.arr);
     };
 
     int pop() {

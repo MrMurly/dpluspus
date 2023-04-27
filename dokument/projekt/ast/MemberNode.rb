@@ -8,6 +8,7 @@ class MemberNode < Node
     end
 
     def evaluate
+        puts "member #{@current}"
         if @child
             if @current.is_a? MemberNode
                 # p @current.evaluate

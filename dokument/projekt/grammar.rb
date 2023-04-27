@@ -139,7 +139,8 @@ class DnD
           # car Volvo;
           # car Volvo = new Car(12,3,3,3,3,45,1241);
           rule :classinit do 
-            match(:_new, :classIdentifier, :callparams) {|_, a, b| ClassInitNode.new(a, b)} #parameters and class initalisation
+            match(:_new, :classIdentifier, '(', :callparams, ')') {|_, a, _, b, _| ClassInitNode.new(a, b)} #parameters and class initalisation
+            match(:_new, :classIdentifier, '(',')') { |_, a, _, _ | ClassInitNode.new(a, nil)} 
           end
 
           rule :classIdentifier do

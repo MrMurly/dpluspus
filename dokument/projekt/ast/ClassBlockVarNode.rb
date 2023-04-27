@@ -9,17 +9,18 @@ class ClassBlockVarNode < ClassBlockNode
     end
 
     def evaluate
-        this = {@name => {
-            :type => @primitive,
-            :value => nil
-            } }
+        this = {}
         if @isList
            this = {
             @name => {
                 :type => @primitive,
                 :value => []
-            }
-           } 
+            }} 
+        else 
+            this = {@name => {
+            :type => @primitive,
+            :value => nil
+            }}
         end
 
        return combine(this, @name, @block)

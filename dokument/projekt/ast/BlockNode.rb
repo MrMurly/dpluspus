@@ -9,17 +9,8 @@ class BlockNode < Node
 
   def evaluate 
     pushStackFrame
-    if @statements.is_a? ReturnNode
-      result = @statements.evaluate
-      popStackFrame
-      return result
-    end
-
-    if @statements.is_a? Node
-      result = @statements.evaluate
-    end
+    @statements.evaluate
       # @statements.each {|s| s.evaluate}
     popStackFrame
-    return result
   end
 end

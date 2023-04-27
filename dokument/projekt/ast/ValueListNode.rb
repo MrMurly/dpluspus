@@ -6,8 +6,12 @@ class ValueListNode < Node
     end
   
     def evaluate
+      puts "vallist #{@value}"
+      puts @value.is_a? Node
+      if @value.is_a? Node
         @value = @value.evaluate
         @value.map! { |n| n.evaluate}
-        return {:value => @value, :type => @value[0][:type]}
+      end
+      return {:value => @value, :type => @value[0][:type]}
     end
 end
