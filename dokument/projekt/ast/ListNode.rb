@@ -14,17 +14,15 @@ class ListNode < Node
 
                 @members = @members.evaluate
 
-                @members.map!(&:evaluate)
-
                 if @listType
-                    for member in @members
+                    for member in @members[:value]
                         if member[:type] != @listType
                             raise "List must only contain members of the type #{@listType}!"
                         end
                     end
                 end
             else
-                @members = []
+                @members = {:type => @listType, :value => []}
             end
         
             if @listType && @name

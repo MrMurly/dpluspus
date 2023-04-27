@@ -10,9 +10,12 @@ class MemberNode < Node
     def evaluate
         if @child
             if @current.is_a? MemberNode
+                # p @current.evaluate
+                # p @child
                 @current = @current.evaluate.concat(@child)
             end
         end
+        #p @current
         @current
     end
 end
