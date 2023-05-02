@@ -12,7 +12,6 @@ class LoopNode < Node
     def evaluate
         if @var
             @var.evaluate
-            
         end
 
         while @boolean.evaluate[:value]

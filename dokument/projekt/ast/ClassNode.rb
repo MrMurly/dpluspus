@@ -18,8 +18,7 @@ class ClassNode < Node
         if @constructor
             @constructor = @constructor.evaluate
         else
-            @constructor = {
-            }
+            @constructor = {}
         end
 
         if @variables
