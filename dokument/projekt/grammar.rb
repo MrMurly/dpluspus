@@ -1,37 +1,13 @@
 require './rdparse'
 Dir["./ast/*.rb"].each { |file| require file } 
 
-class Variable
-  attr_reader :name
-  def initialize name
-    @name = name
-  end
-end
-
-class ClassIdentity
-  attr_reader :name
-  def initialize name
-    @name = name
-  end
-end
-
-class Char
-  attr_reader :value
-  def initialize value
-    @value = value.delete "'"
-  end
-end
-
-
 class DnD
 
     def initialize
         Node.new.clearStackFrame
         @dndParser = Parser.new("DnD") do
-          # @variables = {}
 
           token(/\s+/)
-          #token(/[\(\)\[\]\{\}]/) { |m| m}
           token(/main/) { |m| :_main}
           token(/print/) {|m| :_print}
           token(/class/) { |m| :_class}
@@ -70,7 +46,9 @@ class DnD
           end
 
           rule :statements do
-            match(:statement, ';', :statements) {|a, _, b| StatementNode.new(a, b)}
+            match(:statement, ';', :statements) {|a, _, b| 
+              StatementNode.new(a, b)
+            }
             match(:statement, ';') {|a, _| a}
           end
 
@@ -85,15 +63,10 @@ class DnD
             match(:print)
             
           end
-
-
-          # rule :return do
-          #   match('return', :boolean) {|_, a| ReturnNode.new(a)}
-          # end    
+  
           
           rule :print do 
             match(:_print, '(', :boolean, ')') {|_, _, a, _| PrintNode.new(a)}
-            #match('print', '(', :findelement, ')') {|_, _, a, _| PrintNode.new(a)}
           end
 
 
@@ -108,26 +81,52 @@ class DnD
           #CLASSES
           
           rule :class do 
-            match(:_class, :classIdentifier, '{', :classvarblock, :classconstructor, :classfuncblock, '}') { |_, a, _, b, c, d, _| ClassNode.new(a, b, c, d)}
-            match(:_class, :classIdentifier, '{', :classconstructor, :classfuncblock, '}') { |_, a, _, b, c, _| ClassNode.new(a, b, c)}
-            match(:_class, :classIdentifier, '{', :classconstructor, :classvarblock, '}') { |_, a, _, b, c, _| ClassNode.new(a, b, c)}
-            match(:_class, :classIdentifier, '{' '}') { |_, a, _, b, _, c, _| ClassNode.new(a, b, c)}
+            match(:_class, :classIdentifier, '{', :classvarblock, 
+              :classconstructor, :classfuncblock, '}') { |_, a, _, b, c, d, _| 
+                ClassNode.new(a, b, c, d)
+              }
+            match(:_class, :classIdentifier, '{', :classconstructor,
+              :classfuncblock, '}') { |_, a, _, b, c, _| 
+                ClassNode.new(a, b, c)
+              }
+            match(:_class, :classIdentifier, '{', :classconstructor, 
+              :classvarblock, '}') { |_, a, _, b, c, _| 
+                ClassNode.new(a, b, c)
+              }
+            match(:_class, :classIdentifier, '{' '}') { |_, a, _, b, _, c, _| 
+              ClassNode.new(a, b, c)
+            }
           end
 
           rule :classconstructor do
-            match(:classIdentifier, :_params, :block, ';') { |a, b, c| ClassConstructorNode.new(a, b, c)}
+            match(:classIdentifier, :_params, :block, ';') { |a, b, c| 
+              ClassConstructorNode.new(a, b, c)
+            }
           end
 
           rule :classvarblock do
-            match(:primitive, :identifier, ";", :classvarblock) {|a, b, _, c| ClassBlockVarNode.new(a, b, c)}
-            match(:primitive, :identifier, ";") {|a, b, _| ClassBlockVarNode.new(a, b, nil)} 
-            match(:primitive, "[", "]", :identifier, ';', :classvarblock) {|a, _, _, b, _, c| ClassBlockVarNode.new(a, b, c, true)}
-            match(:primitive, "[", "]", :identifier) {|a, _, _, b| ClassBlockVarNode.new(a, b, nil, true)}
+            match(:primitive, :identifier, ";", :classvarblock) {|a, b, _, c| 
+              ClassBlockVarNode.new(a, b, c)
+            }
+            match(:primitive, :identifier, ";") {|a, b, _| 
+              ClassBlockVarNode.new(a, b, nil)
+            } 
+            match(:primitive, "[", "]", :identifier, ';', :classvarblock) {
+              |a, _, _, b, _, c| ClassBlockVarNode.new(a, b, c, true)
+            }
+            match(:primitive, "[", "]", :identifier) {|a, _, _, b| 
+              ClassBlockVarNode.new(a, b, nil, true)
+            }
           end
 
           rule :classfuncblock do
-            match(:primitive, :identifier, :_params, :block, ';', :classfuncblock) { |a, b, c, d, _, e| ClassBlockFuncNode.new(a, b, c, d, e) }
-            match(:primitive, :identifier, :_params, :block, ';') {|a, b, c, d, _| ClassBlockFuncNode.new(a, b , c, d, nil)}
+            match(:primitive, :identifier, :_params, :block, ';', 
+              :classfuncblock) { |a, b, c, d, _, e| 
+                ClassBlockFuncNode.new(a, b, c, d, e) 
+              }
+            match(:primitive, :identifier, :_params, :block, ';') {
+              |a, b, c, d, _| ClassBlockFuncNode.new(a, b , c, d, nil)
+            }
           end
 
           rule :_params do 
@@ -135,12 +134,13 @@ class DnD
             match('(', :params, ')') {|_, a, _| a}
           end
           
-          # class car { ..... }
-          # car Volvo;
-          # car Volvo = new Car(12,3,3,3,3,45,1241);
           rule :classinit do 
-            match(:_new, :classIdentifier, '(', :callparams, ')') {|_, a, _, b, _| ClassInitNode.new(a, b)} #parameters and class initalisation
-            match(:_new, :classIdentifier, '(',')') { |_, a, _, _ | ClassInitNode.new(a, nil)} 
+            match(:_new, :classIdentifier, '(', :callparams, ')') {
+              |_, a, _, b, _| ClassInitNode.new(a, b)
+            } 
+            match(:_new, :classIdentifier, '(',')') { 
+              |_, a, _, _ | ClassInitNode.new(a, nil)
+            } 
           end
 
           rule :classIdentifier do
@@ -148,21 +148,33 @@ class DnD
           end
 
           rule :classmethod do 
-            match(:identifier, '.', :identifier, '(', ')') { |a, _, b| ClassMethodCallNode.new(a, b, nil)}
-            match(:identifier, '.', :identifier, '(', :callparams, ')') {|a, _, b, _, c| ClassMethodCallNode.new(a, b, c)}
+            match(:identifier, '.', :identifier, '(', ')') { 
+              |a, _, b| ClassMethodCallNode.new(a, b, nil)
+            }
+            match(:identifier, '.', :identifier, '(', :callparams, ')') {
+              |a, _, b, _, c| ClassMethodCallNode.new(a, b, c)
+            }
           end 
 
           #END
 
           #FUNCTIONS
           rule :function do
-            match(:primitive, :identifier, "(", :params, ")", :block) {|a, b, _, c, _, d| DeclareFuncNode.new(a, b, c, d)}
-            match(:primitive, :identifier, "(", ")", :block) {|a, b, _, _, d| DeclareFuncNode.new(a, b, nil, d)}
+            match(:primitive, :identifier, "(", :params, ")", :block) {
+              |a, b, _, c, _, d| DeclareFuncNode.new(a, b, c, d)
+            }
+            match(:primitive, :identifier, "(", ")", :block) {
+              |a, b, _, _, d| DeclareFuncNode.new(a, b, nil, d)
+            }
           end
 
           rule :call do
-            match(:identifier, "(", :callparams, ")") { |a, _, b, _| FuncCallNode.new(a, b)}
-            match(:identifier, "(", ")") { |a, _, _| FuncCallNode.new(a, nil)}
+            match(:identifier, "(", :callparams, ")") { 
+              |a, _, b, _| FuncCallNode.new(a, b)
+            }
+            match(:identifier, "(", ")") {
+              |a, _, _| FuncCallNode.new(a, nil)
+            }
           end
 
           rule :params do
@@ -182,11 +194,14 @@ class DnD
 
           #LOOPS
           rule :while do
-            match(:_while, "(", :boolean, ")", :block) {|_, _, a, _, b| LoopNode.new(nil, nil, a, b)}
+            match(:_while, "(", :boolean, ")", :block) {|_, _, a, _, b| 
+              LoopNode.new(nil, nil, a, b)
+            }
           end
           
           rule :for do
-            match(:_for, "(", :varset, ";",  :varset, ";", :boolean,")", :block) {|_,_, a, _, b, _, c, _, d| LoopNode.new(a, b, c, d)}
+            match(:_for, "(", :varset, ";",  :varset, ";", :boolean,")", 
+            :block) {|_,_, a, _, b, _, c, _, d| LoopNode.new(a, b, c, d)}
           end
           #END
 
@@ -194,10 +209,15 @@ class DnD
 
           #list
           rule :list do
-            match(:primitive, "[", "]", :identifier, "=" , :primlist) {|a, _, _, b, _, c| ListNode.new(a, b, c)}
-            match(:primitive, "[", "]", :identifier, "=", "[","]") {|a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)}
-            match(:primitive, "[", "]", :identifier) {|a, _, _, b| ListNode.new(a, b, nil)}
-            #match(:primlist) {|a| ListNode.new(nil, nil, a)}
+            match(:primitive, "[", "]", :identifier, "=" , :primlist) {
+              |a, _, _, b, _, c| ListNode.new(a, b, c)
+            }
+            match(:primitive, "[", "]", :identifier, "=", "[","]") {
+              |a, _ ,_, b, _, _, _| ListNode.new(a, b, nil)
+            }
+            match(:primitive, "[", "]", :identifier) {|a, _, _, b| 
+              ListNode.new(a, b, nil)
+            }
           end
 
           rule :primlist do 
@@ -214,31 +234,37 @@ class DnD
           end
 
           rule :findelement do
-            match(:identifier, "[", :int, "]") {|a, _, b, _| FindElementNode.new(a, b)}
+            match(:identifier, "[", :int, "]") {|a, _, b, _| 
+              FindElementNode.new(a, b)
+            }
           end
-
-          #"COMPLEX" data type string
-          rule :string do
-            match("\"", /.*/, "\"") {|_, a, _| ValueNode.new(a, "string")}
-          end
-          #END
 
           #IF-STATEMENTS
           rule :if do 
-            match(:_if, '(', :boolean, ')', :block, :else) {|_,_, a, _, b, c| IfElseNode.new(a, b, c)}
-            match(:_if, '(', :boolean, ')', :block) {|_,_, a, _, b| IfNode.new(a, b)}
+            match(:_if, '(', :boolean, ')', :block, :else) {
+              |_,_, a, _, b, c| IfElseNode.new(a, b, c)
+            }
+            match(:_if, '(', :boolean, ')', :block) {
+            |_,_, a, _, b| IfNode.new(a, b)
+            }
           end
 
           rule :else do
-            match(:_else, :_if, '(', :boolean, ')', :block, :else) {|_, _, _, a, _, b, c| IfElseNode.new(a, b, c)}
-            match(:_else, :_if, '(', :boolean, ')', :block) {|_, _, _, a, _, b| IfNode.new(a, b)}
-            match(:_else, :block) {|_, a| a}
+            match(:_else, :_if, '(', :boolean, ')', :block, 
+            :else) {|_, _, _, a, _, b, c| IfElseNode.new(a, b, c)}
+            
+            match(:_else, :_if, '(', :boolean, ')', :block) {|_, _, _, a, _, b|
+            IfNode.new(a, b)}
+            
+             match(:_else, :block) {|_, a| a}
           end
           #END
 
           #LOGIC/ARITEMIK
           rule :boolean do
-              match(:boolean, "|", "|", :and) {|a, _, b| LogicNode.new(a, "or", b)}
+              match(:boolean, "|", "|", :and) {|a, _, b| 
+              LogicNode.new(a, "or", b)}
+              
               match(:and)
           end
           
@@ -248,12 +274,24 @@ class DnD
           end
           
           rule :relation do
-            match(:relation, "!=", :addition) { |a, _, b| LogicNode.new(a, :!=, b)} 
-            match(:relation, "=", "=", :addition) { |a, _, _, b| LogicNode.new(a, :==, b)} 
-            match(:relation, "<", "=", :addition) { |a, _, _, b| LogicNode.new(a, :<=, b)} 
-            match(:relation, ">", "=", :addition) { |a, _, _, b| LogicNode.new(a, :>=, b)} 
-            match(:relation, "<", :addition) { |a, _, b| LogicNode.new(a, :<, b)}  
-            match(:relation, ">", :addition) { |a,  _, b| LogicNode.new(a, :>, b)} 
+            match(:relation, "!=", :addition) { |a, _, b| 
+            LogicNode.new(a, :!=, b)} 
+            
+            match(:relation, "=", "=", :addition) { |a, _, _, b| 
+            LogicNode.new(a, :==, b)} 
+            
+            match(:relation, "<", "=", :addition) { |a, _, _, b| 
+            LogicNode.new(a, :<=, b)} 
+            
+            match(:relation, ">", "=", :addition) { |a, _, _, b|
+            LogicNode.new(a, :>=, b)} 
+            
+            match(:relation, "<", :addition) { |a, _, b| 
+            LogicNode.new(a, :<, b)}  
+            
+            match(:relation, ">", :addition) { |a,  _, b| 
+            LogicNode.new(a, :>, b)}
+            
             match(:addition)
           end
           
@@ -264,7 +302,7 @@ class DnD
           end
 
           rule :multi do
-            match(:term, '^', :multi) { |a, _, b| SymbolNode.new(a, :**, b) } 
+            match(:term, '^', :multi) { |a, _, b| SymbolNode.new(a, :**, b) }
             match(:multi, '/', :term) { |a, _, b| SymbolNode.new(a, :/, b) }
             match(:multi, '*', :term) { |a, _, b| SymbolNode.new(a, :*, b) } 
             match(:multi, '%', :term) { |a, _, b| SymbolNode.new(a, :%, b) }
@@ -289,8 +327,13 @@ class DnD
             match(:varget)
           end
           
+          rule :string do
+            match("\"", /.*/, "\"") {|_, a, _| ValueNode.new(a, "string")}
+          end
+          
           rule :float do
-            match(Integer, ".", Integer)  { |a, _, b| ValueNode.new((a.to_s + "." + b.to_s).to_f, "float") }
+            match(Integer, ".", Integer)  { |a, _, b| 
+            ValueNode.new((a.to_s + "." + b.to_s).to_f, "float") }
           end
 
           rule :int do
@@ -307,15 +350,29 @@ class DnD
 
           rule :varget do 
             match(:findelement)
-            match(:identifier, '.', :identifier, '[', :var,']') { |a, _, b, _, c, _| ClassElemNode.new(a, b, c)}
-            match(:identifier, '.', :identifier) { |a, _, b| ClassVarNode.new(a, b)}
+            match(:identifier, '.', :identifier, '[', :var,']') {
+            |a, _, b, _, c, _| ClassElemNode.new(a, b, c)
+            }
+            
+            match(:identifier, '.', :identifier) { 
+            |a, _, b| ClassVarNode.new(a, b)
+            }
+            
             match(:identifier) {|a| VariableNode.new a}
           end
 
           rule :varset do
-            match(:identifier, '.', :identifier, '=', :varset2) { |a, _, b, _, c| ClassVarAssignmentNode.new(a, b, c)}
-            match(:identifier, '=', :varset2) {|a, _, b| VariableAssignmentNode.new(a, b)}
-            match(:primitive, :identifier, '=', :varset2) {|a, b, _, c| VariableSetNode.new(b, a, c)} 
+            match(:identifier, '.', :identifier, '=', :varset2) { 
+            |a, _, b, _, c| ClassVarAssignmentNode.new(a, b, c)
+            }
+            
+            match(:identifier, '=', :varset2) {
+              |a, _, b| VariableAssignmentNode.new(a, b)
+            }
+            
+            match(:primitive, :identifier, '=', :varset2) {
+            |a, b, _, c| VariableSetNode.new(b, a, c)
+            } 
           end
 
           rule :varset2 do
