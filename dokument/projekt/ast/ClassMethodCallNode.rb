@@ -41,8 +41,9 @@ class ClassMethodCallNode < Node
         for i in 0..paramlen-1
             pm = @parameters[i].evaluate
             paramtype = @head[:parameters][i][:type]
-
+            puts "HAAH #{pm}"
             @@stackframe[@head[:parameters][i][:name]] = pm
+            puts @head[:parameters][i][:name], pm
         end
     end
 end

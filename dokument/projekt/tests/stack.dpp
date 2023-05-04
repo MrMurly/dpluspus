@@ -1,0 +1,6 @@
+int main() {
+    Stack s = new Stack();
+
+    s.push(100);
+    print(s.pop());
+}

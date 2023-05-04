@@ -1,17 +1,28 @@
-class stack {
+class Stack {
     int[] arr;
+    int size;
+
+
+    Stack() {
+        this.size = 0;
+        this.arr = [0];
+    };
 
     int at(int pos) {
         return this.arr[pos];
-    }
+    };
 
     void push(int val) {
+        print(val);
         this.arr = [val] + this.arr;
-    }
+        this.size = this.size + 1;
+        print(this.arr);
+    };
 
     int pop() {
-        int res = this.arr[0];
+        this.size = this.size - 1;
+        int res = this.arr[1];
         this.arr = this.arr - [res];
         return res;
-    }
+    };
 }
