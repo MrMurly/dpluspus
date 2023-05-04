@@ -411,7 +411,7 @@ class DnD
       if done(str) then
         puts "Bye."
       else
-        puts "=> #{@dndParser.parse(str)}"
+        puts "=> #{@dndParser.parse(File.open(str).read).evaluate}"
         parse
       end
     end
