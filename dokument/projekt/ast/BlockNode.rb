@@ -23,7 +23,7 @@ class BlockNode < Node
 
   def evaluate 
     pushStackFrame
-    if @statements.is_a?(node)
+    if @statements.is_a?(Node)
       @statements.evaluate
     end  
     popStackFrame
