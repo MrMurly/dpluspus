@@ -1,6 +1,20 @@
 require './ast/Node'
 
+##
+# A Node representing the initalisation
+# of a class. 
+# e.g. new Foo();
+#
+# Once evaluated, returns
+# a hash consiting of the newly
+# created class instance.
+
 class ClassInitNode < Node
+    
+    ##
+    # Creates a new initalizeNode described by:
+    # - classname: name of the class to initalize.
+    # - paramaters: a node representing the parameters.
 
     def initialize(classname, parameters)
         @classname = classname
@@ -13,6 +27,8 @@ class ClassInitNode < Node
         if @parameters
             parameterSetup
         end
+        # sets up so anything refering to this.foo, will refer to "this" object 
+        # that is being created.
         @@stackframe["this"] = "temp" 
         @@stackframe["temp"] = {:value => @head, :type => @classname }
         if @head[:constructor][:block].is_a? Node
@@ -24,6 +40,10 @@ class ClassInitNode < Node
     end
 
 
+    ##
+    # Sets up the parameters in the stackframe so they
+    # have the correct name and values.
+
     def parameterSetup
         paramlen = @head[:constructor][:parameters].length 
         if @parameters.is_a? Node
@@ -31,7 +51,8 @@ class ClassInitNode < Node
         end
 
         if paramlen != @parameters.length
-            raise "Expected #{paramlen} number of arguments but got #{@parameters.length}"
+            raise "Expected #{paramlen} number of arguments"\
+            " but got #{@parameters.length}"
         end
 
         for i in 0..paramlen-1

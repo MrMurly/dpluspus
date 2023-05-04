@@ -1,7 +1,24 @@
 require './ast/Node'
 
+##
+# a node representing
+# getting a value from a 
+# member array.
+# e.g. foo.bar[0];
+#
+# When evaluted returns the 
+# value and type for the specific
+# value.
+
 class ClassElemNode < Node
-    def initialize classname, varname, pos
+
+    ##
+    # Creates a new ElementNode described by:
+    # - classname: name of the class instance.
+    # - varname: name of member list.
+    # - pos: the position of the element to get.
+
+    def initialize(classname, varname, pos)
       @classname = classname
       @varname = varname
       @pos = pos
@@ -11,7 +28,6 @@ class ClassElemNode < Node
         if @pos.is_a? Node
             @pos = @pos.evaluate
         end
-      puts "hej", searchStackFrame(@classname)[:value][:members][@varname]
       searchStackFrame(@classname)[:value][:members][@varname][:value][@pos[:value]]
     end
 end
