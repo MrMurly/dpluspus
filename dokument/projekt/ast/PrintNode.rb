@@ -17,6 +17,19 @@ class PrintNode < Node
     end
 
     def evaluate
-        puts @obj.evaluate
+        val = @obj.evaluate[:value]
+
+        if val.is_a? Array 
+            print "["
+            for i in 0...val.length do
+                print val[i][:value]
+                if i != val.length - 1
+                    print ", "
+                end
+            end
+            print "]\n"
+        else
+            puts val
+        end
     end
 end
