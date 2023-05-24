@@ -2,5 +2,7 @@ int main() {
     Stack s = new Stack();
 
     s.push(100);
+    s.push(10);
     print(s.pop());
+    print(s.arr);
 }

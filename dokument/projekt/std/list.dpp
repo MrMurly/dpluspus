@@ -4,7 +4,7 @@ class Stack {
 
 
     Stack() {
-        this.size = 0;
+        this.size = 1;
         this.arr = [0];
     };
 
@@ -13,10 +13,8 @@ class Stack {
     };
 
     void push(int val) {
-        print(val);
         this.arr = [val] + this.arr;
         this.size = this.size + 1;
-        print(this.arr);
     };
 
     int pop() {
