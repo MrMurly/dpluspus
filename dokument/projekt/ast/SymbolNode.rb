@@ -28,8 +28,7 @@ class SymbolNode < Node
         if lhs[:type] != rhs[:type]
           raise "Not possible to execute with different types!"
         end
-        puts "lhs", lhs
-        puts "rhs", rhs
+
         {:value => eval("#{lhs[:value]} #{@symbol} #{rhs[:value]}"),
         :type => lhs[:type] }
 

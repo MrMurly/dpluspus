@@ -421,7 +421,7 @@ class DnD
       if res == nil
         raise "error, #{res} is nil"
       end
-      puts res.evaluate
+      res.evaluate
     end
 
     def log(state = true)

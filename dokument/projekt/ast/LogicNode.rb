@@ -32,7 +32,6 @@ class LogicNode < Node
       if @lhs.evaluate[:type] != @rhs.evaluate[:type]
         raise "Not possible to compare different types!"
       end
-
       {:value => 
       eval("#{@lhs.evaluate[:value]} #{@op} #{@rhs.evaluate[:value]}"),
       :type => "bool" }

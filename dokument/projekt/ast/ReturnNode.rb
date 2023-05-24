@@ -8,7 +8,7 @@ require './Return'
 # When evaluated, raises an error which is caught in the 
 # FunctionCall Node.
 
-class ReturnNode 
+class ReturnNode < Node
 
     ##
     # Creates a new ReturnNode described by:
@@ -20,6 +20,7 @@ class ReturnNode
     end
 
     def evaluate
-        raise Return.new @val.evaluate
+        val = @val.evaluate
+        raise Return.new val    
     end
 end
